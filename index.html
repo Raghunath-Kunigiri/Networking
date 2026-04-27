@@ -20,9 +20,10 @@
             --text-main: #c9d1d9;
             --text-dim: #8b949e;
             --border: #30363d;
+            --red: #ff4d4d;
             --font-mono: 'JetBrains Mono', monospace;
             --font-sans: 'IBM Plex Sans', sans-serif;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -360,10 +361,90 @@
         .search-result-item:last-child {
             border-bottom: none;
         }
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--cyan);
+            border-left: 4px solid var(--cyan);
+            padding: 12px 24px;
+            border-radius: 4px;
+            color: white;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .tag-chip {
+            display: inline-block;
+            padding: 2px 10px;
+            background: rgba(139, 148, 158, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-right: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tag-chip:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        #menuToggle {
+            display: none;
+            cursor: pointer;
+            padding: 10px;
+            margin-right: 15px;
+        }
+
+        @media (max-width: 900px) {
+            #menuToggle { display: block; }
+            aside.mobile-open { width: 300px; left: 0; z-index: 1000; }
+        }
+
+        .user-badge {
+            background: var(--amber);
+            color: black;
+            font-size: 0.6rem;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-weight: bold;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* Analytical Highlights */
+        .highlight-box {
+            border-left: 2px solid var(--cyan);
+            padding-left: 15px;
+            margin: 20px 0;
+            background: rgba(0, 212, 255, 0.02);
+        }
     </style>
 </head>
 <body>
     <header>
+        <div id="menuToggle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><line x1="3" y1="12" x2="21" y1="12"></line><line x1="3" y1="6" x2="21" y1="6"></line><line x1="3" y1="18" x2="21" y1="18"></line></svg>
+        </div>
         <div class="logo">DC TECH HUB</div>
         <div class="search-container">
             <input type="text" id="globalSearch" placeholder="SEARCH SYSTEM [KEYWORDS, CONCEPTS, STANDARDS]..." autocomplete="off">
@@ -410,24 +491,41 @@
 
             <div>
                 <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">TOPIC NAME</label>
-                <input type="text" id="newName" placeholder="e.g. BGP Best Practices" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans)">
+                <input type="text" id="newName" placeholder="e.g. BGP Best Practices" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); outline: none">
+            </div>
+
+            <div>
+                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">IMAGE UPLOAD (PNG/JPG)</label>
+                <input type="file" id="newFile" accept="image/*" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-dim); padding: 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem">
+            </div>
+
+            <div>
+                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">PDF EMBED URL</label>
+                <input type="text" id="newPDF" placeholder="https://example.com/spec.pdf" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); outline: none">
+            </div>
+
+            <div>
+                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">TAGS (COMMA SEPARATED)</label>
+                <input type="text" id="newTags" placeholder="SFP, Fiber, OS2" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); outline: none">
             </div>
 
             <div>
                 <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">NOTES (MARKDOWN SUPPORTED)</label>
-                <textarea id="newNotes" rows="6" placeholder="Technical details..." style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); resize: vertical"></textarea>
+                <textarea id="newNotes" rows="4" placeholder="Technical details..." style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); resize: vertical; outline: none"></textarea>
             </div>
 
             <div>
                 <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">VIDEO LINK (YOUTUBE EMBED URL)</label>
-                <input type="text" id="newVideo" placeholder="https://www.youtube.com/embed/..." style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans)">
+                <input type="text" id="newVideo" placeholder="https://www.youtube.com/embed/..." style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); outline: none">
             </div>
 
-            <button id="saveBtn" style="margin-top: 20px; background: var(--cyan); color: var(--bg-deep); border: none; padding: 15px; border-radius: 4px; font-family: var(--font-mono); font-weight: 700; cursor: pointer; transition: var(--transition)">
+            <button id="saveBtn" style="margin-top: 20px; background: var(--cyan); color: var(--bg-deep); border: none; padding: 15px; border-radius: 4px; font-family: var(--font-mono); font-weight: 700; cursor: pointer; transition: var(--transition); box-shadow: 0 0 15px var(--cyan-glow)">
                 INITIALIZE INJECTION
             </button>
         </div>
     </div>
+
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
         const TECH_CONTENT = {
@@ -473,7 +571,8 @@
                         concepts: [
                             { title: "TCP (Transmission Control)", text: "Connection-oriented with error checking. Use Case: Database transfers, web pages." },
                             { title: "UDP (User Datagram)", text: "Connectionless, low overhead. Use Case: VoIP, Gaming, Video streaming." }
-                        ]
+                        ],
+                        related: ["OSI Model", "Subnetting"]
                     },
                     "subnetting": {
                         title: "Subnetting & CIDR (Classless Inter-Domain Routing)",
@@ -508,10 +607,10 @@
                         title: "PDU (Power Distribution Unit)",
                         summary: "Devices used to distribute power to computers and networking equipment within a rack.",
                         concepts: [
-                            { title: "Basic PDU", text: "Non-intelligent power strip." },
-                            { title: "Metered PDU", text: "Shows local current draw to prevent overloading." },
-                            { title: "Switched/Intelligent", text: "Allows for remote outlet control (rebooting) and per-outlet monitoring." }
-                        ]
+                            { title: "Intelligent PDU", text: "Provides remote outlet switching and real-time power monitoring." },
+                            { title: "Phase Balance", text: "Ensuring load is distributed equally across 3-phase power feeds." }
+                        ],
+                        related: ["UPS", "ATS"]
                     }
                 }
             },
@@ -524,60 +623,69 @@
                         image: "./assets/fiber.png",
                         diagram: "fiber",
                         concepts: [
-                            { title: "SMF (Single-Mode)", text: "Long-range (kilometers). Use Case: Inter-building or service provider backbones." },
-                            { title: "MMF (Multi-Mode)", text: "Short-range (meters). Use Case: Intra-rack or intra-room patching." }
+                            { title: "SMF (Single-Mode)", text: "Long-range (kilometers). OS2 is the current standard." },
+                            { title: "MMF (Multi-Mode)", text: "Short-range (meters). OM4/OM5 used for 100G+ intra-room." }
                         ],
                         specs: [
-                            ["Standard", "Mode", "Core Dia", "Bandwidth", "Max Reach"],
-                            ["OM3", "Multi", "50µm", "10Gb/s", "300m"],
-                            ["OM4", "Multi", "50µm", "40Gb/s", "400m"],
-                            ["OS2", "Single", "9µm", "100Gb/s+", "40km"]
-                        ]
+                            ["Standard", "Core Dia", "Bandwidth", "Max Reach"],
+                            ["OS2", "9µm", "100Gb/s+", "40km"],
+                            ["OM4", "50µm", "40Gb/s", "400m"],
+                            ["OM5", "50µm", "Wideband", "400m"]
+                        ],
+                        related: ["Connectors", "SFP", "QSFP"]
                     },
                     "connectors": {
                         title: "Connector Types",
                         summary: "Standardized physical interfaces for fiber and copper cables.",
                         concepts: [
                             { title: "LC (Lucent Connector)", text: "Small form factor, standard for high-density fiber patching." },
-                            { title: "MTP/MPO", text: "Multi-fiber Push On. Used for 40G/100G/400G trunking (12-24 fibers)." },
-                            { title: "RJ45", text: "Standard 8-pin connector for copper (Cat6/Cat6a) interfaces." }
-                        ]
-                    }
-                }
-            },
-            "protocols-standards": {
-                title: "Protocols & Standards",
-                topics: {
-                    "lacp": {
-                        title: "LACP (Link Aggregation Control Protocol - 802.3ad)",
-                        summary: "Allows multiple physical links to be combined into a single logical channel for redundancy and increased bandwidth.",
-                        concepts: [
-                            { title: "Active Mode", text: "Initiates LACP negotiation with the neighbor." },
-                            { title: "Passive Mode", text: "Waits for the neighbor to initiate negotiation." }
+                            { title: "MTP/MPO", text: "Multi-fiber Push On. Used for 40G/100G/400G trunking (12-24 fibers)." }
                         ],
-                        proTip: "LACP load balancing is flow-based, meaning a single TCP stream will never exceed the speed of one physical link."
+                        related: ["Fiber Optics", "Transceivers"]
                     }
                 }
             },
             "power-cooling": {
                 title: "Power & Cooling",
                 topics: {
-                    "hot-cold-aisle": {
+                    "aisle-containment": {
                         title: "Aisle Containment Systems",
                         summary: "Separating hot exhaust air from cold supply air to maximize cooling efficiency.",
                         diagram: "cooling",
                         concepts: [
-                            { title: "CAC (Cold Aisle Containment)", text: "Encloses the cold aisle to ensure all supply air goes through the racks." },
-                            { title: "HAC (Hot Aisle Containment)", text: "Encloses the hot aisle to duct exhaust air directly back to CRAC units." }
+                            { title: "CAC", text: "Cold Aisle Containment. Efficiently delivers air to server intakes." },
+                            { title: "HAC", text: "Hot Aisle Containment. Directly extracts hot air to CRACs." }
                         ],
-                        proTip: "Effective containment allows raising the chilled water temperature, saving significant energy."
+                        proTip: "Raising supply temps by just 1 degree can save 2-3% in energy costs."
                     },
-                    "pue-metric": {
+                    "pue": {
                         title: "PUE (Power Usage Effectiveness)",
-                        summary: "The industry standard for measuring data center energy efficiency. PUE = Total Power / IT Power.",
+                        summary: "The industry standard metric for measuring data center energy efficiency.",
                         concepts: [
-                            { title: "Ideal PUE", text: "1.0 would mean 100% of power goes to IT. Typical modern DCs are 1.1 - 1.4." },
-                            { title: "PDU Efficiency", text: "Losses in UPS and PDUs contribute to a higher PUE." }
+                            { title: "Benchmark", text: "Ideal is 1.0. Modern hyperscale DCs achieve 1.1-1.2." },
+                            { title: "Components", text: "Includes power used by cooling, lighting, and UPS losses." }
+                        ]
+                    }
+                }
+            },
+            "monitoring-tools": {
+                title: "Monitoring & Tools",
+                topics: {
+                    "snmp": {
+                        title: "SNMP (Simple Network Management Protocol)",
+                        summary: "The standard protocol for collecting and organizing information about managed devices on IP networks.",
+                        concepts: [
+                            { title: "OIDs", text: "Object Identifiers used to point to specific metrics (e.g., Temp, CPU)." },
+                            { title: "Traps", text: "Alert messages sent by the device to the NMS when a threshold is met." }
+                        ],
+                        related: ["Syslog", "NetFlow"]
+                    },
+                    "cli-tools": {
+                        title: "Troubleshooting Tools",
+                        summary: "Essential CLI utilities for any DC technician on the floor.",
+                        concepts: [
+                            { title: "iperf", text: "Measures actual throughput between two points." },
+                            { title: "mtr", text: "Combined ping and traceroute for real-time path analysis." }
                         ]
                     }
                 }
@@ -593,49 +701,40 @@
                     "CIDR": "Classless Inter-Domain Routing: Method for flexible IP address allocation.",
                     "CLI": "Command Line Interface: Text-based interface for configuring devices.",
                     "CRAC": "Computer Room Air Conditioner: Maintains temperature, air distribution and humidity.",
-                    "DAC": "Direct Attach Copper: Passive twinax cable with integrated transceivers for mid-reach (up to 7m).",
+                    "DAC": "Direct Attach Copper: Passive twinax cable with integrated transceivers.",
                     "DCBX": "Data Center Bridging Exchange: L2 protocol for exchanging capabilities between devices.",
                     "DCIM": "Data Center Infrastructure Management: Software to monitor power, cooling, and assets.",
                     "DHCP": "Dynamic Host Configuration Protocol: Automatically assigns IP addresses to devices.",
-                    "DNS": "Domain Name System: Translates human-readable names (web.com) to IP addresses.",
-                    "EIA": "Electronic Industries Alliance: Organization that sets standards like the rack dimensions.",
+                    "DNS": "Domain Name System: Translates human-readable names to IP addresses.",
                     "FCoE": "Fibre Channel over Ethernet: Encapsulates Fibre Channel frames over Ethernet networks.",
                     "HSRP": "Hot Standby Router Protocol: Provides gateway redundancy for IP networks.",
-                    "ICMP": "Internet Control Message Protocol: Used for diagnostics and error reporting (ping, traceroute).",
+                    "ICMP": "Internet Control Message Protocol: Used for diagnostics (ping).",
                     "IP": "Internet Protocol: Network layer protocol for addressing and routing.",
-                    "iSCSI": "Internet Small Computer Systems Interface: IP-based storage networking standard.",
-                    "KVM": "Keyboard, Video, Mouse: Hardware allowing access to multiple servers from one console.",
-                    "LACP": "Link Aggregation Control Protocol: Bundles multiple physical links into one logical link.",
-                    "LLDP": "Link Layer Discovery Protocol: Vendor-neutral neighbor discovery protocol (IEEE 802.1AB).",
-                    "MAC": "Media Access Control: Unique hardware identifier for network interfaces.",
-                    "MMF": "Multi-Mode Fiber: Used for short distance, uses LED or VCSEL light sources.",
-                    "MTP": "Multi-fiber Termination Push-on: High performance MPO connector.",
-                    "MTU": "Maximum Transmission Unit: Largest data packet size acceptable by the network (standard 1500).",
-                    "N+1": "Redundancy Level: System has one extra component beyond the minimum required.",
-                    "NETFLOW": "Standard for collecting IP network traffic as it enters/leaves an interface.",
-                    "NIC": "Network Interface Card: Hardware that connects a computer to a computer network.",
-                    "OSI": "Open Systems Interconnection: Theoretical model for network communications.",
-                    "OSPF": "Open Shortest Path First: Link-state interior gateway routing protocol.",
-                    "PDU": "Power Distribution Unit: Device with multiple outlets to distribute power to equipment.",
-                    "PING": "Packet InterNet Groper: Utility to test reachability of a host.",
-                    "PUE": "Power Usage Effectiveness: Ratio of total facility power to IT equipment power.",
-                    "QSFP": "Quad Small Form-factor Pluggable: Compact, hot-pluggable transceiver (4 lanes).",
-                    "RFC": "Request for Comments: Document describing internet standards and protocols.",
-                    "RJ45": "Registered Jack 45: 8-pin connector for ethernet cables.",
-                    "SAN": "Storage Area Network: Dedicated high-speed network for block-level data storage.",
-                    "SFP": "Small Form-factor Pluggable: Compact, hot-pluggable transceiver module.",
-                    "SMF": "Single-Mode Fiber: Long distance fiber using laser light sources.",
-                    "SNMP": "Simple Network Management Protocol: Used for managing devices on IP networks.",
-                    "STP": "Spanning Tree Protocol: Prevents loops in Ethernet networks (IEEE 802.1D).",
-                    "SYSLOG": "Standard for message logging on network devices.",
-                    "TCP": "Transmission Control Protocol: Reliable, connection-oriented transport protocol.",
-                    "TRACEROUTE": "Tool to trace the path and measure transit delays of packets.",
-                    "UPS": "Uninterruptible Power Supply: Battery backup to provide near-instantaneous protection.",
-                    "VLAN": "Virtual Local Area Network: logical partition of a layer 2 network.",
-                    "VOIP": "Voice over Internet Protocol: Group of technologies for delivering voice over IP.",
-                    "VTP": "VLAN Trunking Protocol: Proprietary protocol to manage VLANs across switches.",
-                    "WAP": "Wireless Access Point: Networking hardware that allows Wi-Fi devices to connect.",
-                    "WWN": "World Wide Name: Unique identifier used in storage area networks."
+                    "iSCSI": "Internet Small Computer Systems Interface: IP-based storage standard.",
+                    "KVM": "Keyboard, Video, Mouse: Access multiple servers from one console.",
+                    "LACP": "Link Aggregation Control Protocol: Bundles physical links into one logical link.",
+                    "LLDP": "Link Layer Discovery Protocol: Vendor-neutral neighbor discovery protocol.",
+                    "MAC": "Media Access Control: Unique hardware identifier for interfaces.",
+                    "MMF": "Multi-Mode Fiber: Used for short distance networking.",
+                    "MTP": "Multi-fiber Termination Push-on: High performance connector.",
+                    "MTU": "Maximum Transmission Unit: Largest packet size (standard 1500).",
+                    "N+1": "Redundancy: System has one extra component.",
+                    "NETFLOW": "Standard for collecting IP network traffic info.",
+                    "NIC": "Network Interface Card: Connection hardware.",
+                    "OSPF": "Open Shortest Path First: Link-state protocol.",
+                    "PDU": "Power Distribution Unit: Rack-mounted power strip.",
+                    "PUE": "Power Usage Effectiveness: Facility Power / IT Power.",
+                    "QSFP": "Quad Small Form-factor Pluggable: 4-lane transceiver.",
+                    "RJ45": "Registered Jack 45: 8-pin copper connector.",
+                    "SAN": "Storage Area Network: Dedicated storage network.",
+                    "SFP": "Small Form-factor Pluggable: Compact transceiver.",
+                    "SMF": "Single-Mode Fiber: Long distance laser fiber.",
+                    "SNMP": "Simple Network Management Protocol: Device management protocol.",
+                    "STP": "Spanning Tree Protocol: Prevents network loops.",
+                    "SYSLOG": "Standard for message logging.",
+                    "TCP": "Transmission Control Protocol: Reliable transport.",
+                    "UPS": "Uninterruptible Power Supply: Battery backup.",
+                    "VLAN": "Virtual Local Area Network: Logical network partition."
                 }
             }
         };
@@ -800,11 +899,16 @@
             document.getElementById('searchResults').style.display = 'none';
             document.getElementById('globalSearch').value = '';
         }
-
-        function viewUser(index) {
-            renderUserTopic(userContent[index]);
-            document.getElementById('searchResults').style.display = 'none';
-            document.getElementById('globalSearch').value = '';
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         function renderTopic(catId, topicId) {
@@ -817,18 +921,25 @@
             }
 
             const topic = category.topics[topicId];
+            const isUserGenerated = topic.isUserAdded;
             
             let html = `
                 <div class="content-container">
                     <div class="topic-header">
                         <span class="category-badge">${category.title}</span>
-                        <h1>${topic.title}</h1>
+                        <h1>${topic.title} ${isUserGenerated ? '<span class="user-badge">USER ADDED</span>' : ''}</h1>
                         <p class="summary">${topic.summary}</p>
+                        
+                        ${topic.tags ? `
+                            <div style="margin-top: 10px">
+                                ${topic.tags.map(tag => `<span class="tag-chip" onclick="executeSearch('${tag}')">#${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
                     </div>
 
                     ${topic.image ? `
                         <div style="margin-bottom: 32px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border)">
-                            <img src="${topic.image}" alt="${topic.title}" style="width: 100%; height: 300px; object-fit: cover; filter: brightness(0.8) contrast(1.2)">
+                            <img src="${topic.image}" alt="${topic.title}" style="width: 100%; height: 350px; object-fit: cover; filter: brightness(0.9) contrast(1.1)">
                         </div>
                     ` : ''}
 
@@ -844,9 +955,16 @@
                     ` : ''}
 
                     ${topic.diagram ? `
-                        <div style="margin-top: 40px">
+                        <div style="margin-top: 40px" class="highlight-box">
                             <h3 style="font-family: var(--font-mono); margin-bottom: 16px; color: var(--text-dim); font-size: 0.8rem">SYSTEM ANALYTICAL DIAGRAM</h3>
                             <div class="diagram-area" id="diagram-${topic.diagram}"></div>
+                        </div>
+                    ` : ''}
+
+                    ${topic.pdf ? `
+                        <div style="margin-top: 40px">
+                            <h3 style="font-family: var(--font-mono); margin-bottom: 16px; color: var(--text-dim); font-size: 0.8rem">ATTACHED TECHNICAL DOCUMENTATION</h3>
+                            <iframe src="${topic.pdf}" style="width:100%; height:500px; border: 1px solid var(--border); border-radius: 8px"></iframe>
                         </div>
                     ` : ''}
 
@@ -863,6 +981,24 @@
                         </div>
                     ` : ''}
 
+                    ${topic.video ? `
+                        <div style="margin-top: 40px">
+                            <h3 style="font-family: var(--font-mono); margin-bottom: 16px; color: var(--text-dim); font-size: 0.8rem">TECHNICAL VIDEO REFERENCE</h3>
+                            <div class="video-container">
+                                <iframe width="560" height="315" src="${topic.video}" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${topic.related ? `
+                        <div style="margin-top: 40px">
+                            <h4 style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 12px">RELATED CONCEPTS</h4>
+                            <div>
+                                ${topic.related.map(r => `<span class="tag-chip" onclick="executeSearch('${r}')">${r}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
                     ${topic.proTip ? `
                         <div style="margin-top: 40px; padding: 24px; border-left: 4px solid var(--amber); background: rgba(245, 158, 11, 0.05); border-radius: 0 8px 8px 0">
                             <h4 style="color: var(--amber); font-family: var(--font-mono); margin-bottom: 8px; letter-spacing: 1px">FIELD ENGINEER PRO-TIP</h4>
@@ -872,48 +1008,19 @@
                 </div>
             `;
             contentArea.innerHTML = html;
+            window.scrollTo(0,0);
             
             if (topic.diagram) renderDiagram(topic.diagram);
         }
 
-        function renderGlossary() {
-            const glossary = TECH_CONTENT['glossary'];
-            let html = `
-                <div class="content-container">
-                    <div class="topic-header">
-                        <span class="category-badge">Reference</span>
-                        <h1>TERMINOLOGY GLOSSARY</h1>
-                    </div>
-                    <div class="card-grid" style="grid-template-columns: 1fr">
-                        ${Object.entries(glossary.terms).sort().map(([term, def]) => `
-                            <div class="card" style="display: flex; gap: 20px; align-items: baseline">
-                                <span style="font-family: var(--font-mono); color: var(--cyan); min-width: 120px">${term}</span>
-                                <span style="color: var(--text-dim)">${def}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-            document.getElementById('contentArea').innerHTML = html;
-        }
-
-        function renderUserTopic(data) {
-            let html = `
-                <div class="content-container">
-                    <div class="topic-header">
-                        <span class="category-badge" style="border-color: var(--amber); color: var(--amber)">User Contributed</span>
-                        <h1>${data.name}</h1>
-                        <p class="summary">${data.notes || 'No description provided.'}</p>
-                    </div>
-                    ${data.video ? `
-                        <div style="margin-top: 24px; aspect-ratio: 16/9; background: #000; border: 1px solid var(--border)">
-                            <iframe width="100%" height="100%" src="${data.video}" frameborder="0" allowfullscreen></iframe>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-            document.getElementById('contentArea').innerHTML = html;
-        }
+        window.executeSearch = (term) => {
+            const searchInput = document.getElementById('globalSearch');
+            searchInput.value = term;
+            searchInput.dispatchEvent(new Event('input'));
+            if (window.innerWidth <= 900) {
+                document.querySelector('aside').classList.remove('mobile-open');
+            }
+        };
 
         function renderDiagram(type) {
             const container = document.getElementById(`diagram-${type}`);
@@ -958,12 +1065,10 @@
                             ${i % 5 === 0 ? `<text x="75" y="${28 + i*11}" fill="var(--text-dim)" font-size="8">${42-i}U</text>` : ''}
                         `).join('')}
                         <g filter="drop-shadow(0 0 5px var(--cyan-glow))">
-                            <rect x="105" y="400" width="190" height="44" fill="var(--cyan)" fill-opacity="0.1" stroke="var(--cyan)" />
-                            <text x="135" y="425" fill="white" font-size="10">STORAGE NODE A</text>
-                            <rect x="105" y="367" width="190" height="22" fill="var(--amber)" fill-opacity="0.1" stroke="var(--amber)" />
-                            <text x="145" y="382" fill="white" font-size="9">DATABASE SRV</text>
-                            <rect x="105" y="355" width="190" height="11" fill="var(--cyan)" fill-opacity="0.1" stroke="var(--cyan)" />
-                            <text x="155" y="363" fill="white" font-size="7">TOR SWITCH</text>
+                            <rect x="105" y="380" width="190" height="44" fill="var(--cyan)" fill-opacity="0.1" stroke="var(--cyan)" />
+                            <text x="135" y="405" fill="white" font-size="10">STORAGE NODE A</text>
+                            <rect x="105" y="347" width="190" height="22" fill="var(--amber)" fill-opacity="0.1" stroke="var(--amber)" />
+                            <text x="145" y="362" fill="white" font-size="9">DATABASE SRV</text>
                         </g>
                         <text x="120" y="505" fill="var(--text-dim)" font-size="10">EIA-310 STANDARD RACK</text>
                     </svg>
@@ -980,16 +1085,13 @@
                             <path d="M 180 150 L 210 150" />
                             <path d="M 260 150 L 230 150" />
                         </g>
-                        <text x="180" y="330" fill="var(--cyan)" font-size="10">COLD AIR INTAKE (PERF TILES)</text>
+                        <text x="180" y="330" fill="var(--cyan)" font-size="10">COLD AISLE INTAKE</text>
                         
                         <g stroke="var(--amber)" stroke-width="2" fill="none">
-                            <path d="M 380 340 L 380 100" stroke-dasharray="10,5" opacity="0.5" />
-                            <circle cx="340" cy="120" r="15" stroke="var(--amber)" fill="var(--amber)" fill-opacity="0.1" />
-                            <text x="333" y="125" fill="var(--amber)" font-size="12">♨</text>
+                            <path d="M 380 340 L 380 100" stroke-dasharray="10,5" opacity="0.3" />
+                            <text x="333" y="125" fill="var(--amber)" font-size="20">♨</text>
                         </g>
-                        <text x="360" y="60" fill="var(--amber)" font-size="10">HOT AIR RETURNS TO CRAC</text>
-                        
-                        <text x="110" y="280" fill="var(--text-dim)" font-size="10">ROW 101/A</text>
+                        <text x="360" y="60" fill="var(--amber)" font-size="10">HOT AIR RETURNS</text>
                     </svg>
                 `;
             } else if (type === 'fiber') {
@@ -999,29 +1101,17 @@
                             <path d="M 0 0 H 60 V 50 H 0 Z" fill="none" stroke="var(--cyan)" stroke-width="2" />
                             <circle cx="15" cy="20" r="4" fill="var(--cyan)" />
                             <circle cx="45" cy="20" r="4" fill="var(--cyan)" />
-                            <text x="0" y="75" fill="var(--cyan)" font-size="12" font-family="JetBrains Mono">LC DUPLEX</text>
+                            <text x="0" y="75" fill="var(--cyan)" font-size="12">LC DUPLEX</text>
                         </g>
                         <g transform="translate(260, 50)">
                             <path d="M 0 5 H 80 V 45 H 0 Z" fill="none" stroke="var(--amber)" stroke-width="3" />
                             <rect x="10" y="15" width="60" height="20" fill="var(--amber)" fill-opacity="0.2" />
-                            <text x="-10" y="75" fill="var(--amber)" font-size="12" font-family="JetBrains Mono">MTP/MPO (12-FIBER)</text>
+                            <text x="-10" y="75" fill="var(--amber)" font-size="12">MTP/MPO</text>
                         </g>
-                        <g transform="translate(500, 50)">
-                            <path d="M 0 0 L 20 -10 L 40 0 V 50 H 0 Z" fill="none" stroke="white" stroke-width="2" opacity="0.6" />
-                            <rect x="5" y="10" width="30" height="30" stroke="white" fill="none" />
-                            <text x="-5" y="75" fill="white" font-size="12" font-family="JetBrains Mono" opacity="0.6">RJ45 (COPPER)</text>
+                        <g transform="translate(480, 50)">
+                            <path d="M 5 0 H 45 V 50 H 5 V 20 H 0 V 10 H 5 Z" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="2" />
+                            <text x="0" y="75" fill="white" fill-opacity="0.5" font-size="12">RJ45</text>
                         </g>
-                    </svg>
-                `;
-            } else if (type === 'bgp') {
-                svg = `
-                    <svg viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.3); border-radius: 8px">
-                        <rect x="50" y="50" width="100" height="100" fill="var(--bg-card)" stroke="var(--cyan)" />
-                        <text x="60" y="100" fill="white" font-size="10">AS 65001</text>
-                        <rect x="450" y="50" width="100" height="100" fill="var(--bg-card)" stroke="var(--amber)" />
-                        <text x="460" y="100" fill="white" font-size="10">AS 65002</text>
-                        <line x1="150" y1="100" x2="450" y2="100" stroke="white" stroke-width="2" stroke-dasharray="5,5" />
-                        <text x="250" y="90" fill="var(--text-dim)" font-size="10">BGP PEERING (TCP 179)</text>
                     </svg>
                 `;
             }
@@ -1029,7 +1119,207 @@
             container.innerHTML = svg;
         }
 
-        init();
+        function renderGlossary() {
+            const contentArea = document.getElementById('contentArea');
+            const sortedTerms = Object.keys(TECH_CONTENT.glossary.terms).sort();
+            
+            let html = `
+                <div class="content-container">
+                    <div class="topic-header">
+                        <span class="category-badge">Reference</span>
+                        <h1>Technical Glossary</h1>
+                        <p class="summary">Comprehensive A-Z index of data center networking, infrastructure, and protocol terminology.</p>
+                    </div>
+                    <div class="glossary-grid">
+                        ${sortedTerms.map(term => `
+                            <div class="glossary-item">
+                                <div class="term">${term}</div>
+                                <div class="definition">${TECH_CONTENT.glossary.terms[term]}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            contentArea.innerHTML = html;
+            window.scrollTo(0,0);
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.cat-name').forEach(header => {
+                header.addEventListener('click', () => {
+                    const parent = header.parentElement;
+                    const isOpen = parent.classList.contains('active');
+                    document.querySelectorAll('.sidebar-category').forEach(c => c.classList.remove('active'));
+                    if (!isOpen) parent.classList.add('active');
+                });
+            });
+
+            document.querySelectorAll('.topic-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const catId = link.dataset.cat;
+                    const topicId = link.dataset.topic;
+                    renderTopic(catId, topicId);
+                    
+                    document.querySelectorAll('.topic-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+
+                    if (window.innerWidth <= 900) {
+                        document.querySelector('aside').classList.remove('mobile-open');
+                    }
+                });
+            });
+
+            document.getElementById('menuToggle').addEventListener('click', () => {
+                document.querySelector('aside').classList.toggle('mobile-open');
+            });
+
+            const searchInput = document.getElementById('globalSearch');
+            const searchResults = document.getElementById('searchResults');
+
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                if (term.length < 2) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+
+                let matches = [];
+                Object.keys(TECH_CONTENT).forEach(catId => {
+                    const cat = TECH_CONTENT[catId];
+                    if (cat.topics) {
+                        Object.keys(cat.topics).forEach(topicId => {
+                            const topic = cat.topics[topicId];
+                            if (topic.title.toLowerCase().includes(term) || topic.summary.toLowerCase().includes(term)) {
+                                matches.push({ title: topic.title, catId, topicId, type: 'Topic' });
+                            }
+                        });
+                    }
+                    if (cat.terms) {
+                        Object.keys(cat.terms).forEach(termKey => {
+                            if (termKey.toLowerCase().includes(term)) {
+                                matches.push({ title: termKey, catId, topicId: 'glossary', type: 'Glossary' });
+                            }
+                        });
+                    }
+                });
+
+                if (matches.length > 0) {
+                    searchResults.innerHTML = matches.slice(0, 8).map(m => `
+                        <div class="search-result-item" onclick="handleSearchClick('${m.catId}', '${m.topicId}')">
+                            <span style="color: var(--cyan); font-size: 0.7rem; font-family: var(--font-mono)">[${m.type}]</span>
+                            ${m.title}
+                        </div>
+                    `).join('');
+                    searchResults.style.display = 'block';
+                } else {
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            window.handleSearchClick = (catId, topicId) => {
+                if (topicId === 'glossary') {
+                    renderGlossary();
+                } else {
+                    renderTopic(catId, topicId);
+                }
+                document.getElementById('globalSearch').value = '';
+                searchResults.style.display = 'none';
+            };
+
+            const fab = document.getElementById('fab');
+            const drawer = document.getElementById('drawer');
+            const closeDrawer = document.getElementById('closeDrawer');
+            const saveBtn = document.getElementById('saveBtn');
+
+            fab.addEventListener('click', () => drawer.classList.add('open'));
+            closeDrawer.addEventListener('click', () => drawer.classList.remove('open'));
+
+            saveBtn.addEventListener('click', async () => {
+                const name = document.getElementById('newName').value;
+                const notes = document.getElementById('newNotes').value;
+                const video = document.getElementById('newVideo').value;
+                const pdf = document.getElementById('newPDF').value;
+                const tagsRaw = document.getElementById('newTags').value;
+                const fileInput = document.getElementById('newFile');
+                
+                if (!name || !notes) {
+                    showToast("ERROR: TOPIC NAME AND NOTES ARE REQUIRED");
+                    return;
+                }
+
+                let imageData = '';
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    imageData = await new Promise(resolve => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(fileInput.files[0]);
+                    });
+                }
+
+                const newTopic = {
+                    title: name,
+                    summary: notes.substring(0, 100) + "...",
+                    concepts: [{ title: "User Contribution", text: notes }],
+                    video: video || null,
+                    image: imageData || null,
+                    pdf: pdf || null,
+                    tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : [],
+                    isUserAdded: true
+                };
+
+                const userContent = JSON.parse(localStorage.getItem('dc_user_content') || '[]');
+                userContent.push(newTopic);
+                localStorage.setItem('dc_user_content', JSON.stringify(userContent));
+
+                injectUserContentToSidebar();
+                drawer.classList.remove('open');
+                showToast("SUCCESS: BLOCK INJECTED TO VENDOR TECHNOLOGIES");
+                
+                document.getElementById('newName').value = '';
+                document.getElementById('newNotes').value = '';
+                document.getElementById('newVideo').value = '';
+                document.getElementById('newPDF').value = '';
+                document.getElementById('newTags').value = '';
+                document.getElementById('newFile').value = '';
+            });
+        }
+
+        function injectUserContentToSidebar() {
+            const container = document.getElementById('user-topics-container');
+            const userContent = JSON.parse(localStorage.getItem('dc_user_content') || '[]');
+            
+            TECH_CONTENT['vendor-technologies'].topics = {}; 
+            
+            if (userContent.length === 0) {
+                container.innerHTML = '<div style="padding: 10px 24px; font-size: 0.75rem; color: var(--text-dim); font-style: italic">No user modules detected...</div>';
+                return;
+            }
+
+            container.innerHTML = userContent.map((topic, idx) => {
+                const topicId = `user-${idx}`;
+                TECH_CONTENT['vendor-technologies'].topics[topicId] = topic;
+                return `
+                    <div class="topic-link" data-cat="vendor-technologies" data-topic="${topicId}">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px"><path d="M12 20v-6M9 20V10M15 20V4M6 20v-4M18 20V8"></path></svg>
+                        ${topic.title}
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.topic-link').forEach(link => {
+                link.onclick = () => {
+                    const catId = link.dataset.cat;
+                    const topicId = link.dataset.topic;
+                    renderTopic(catId, topicId);
+                    document.querySelectorAll('.topic-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                };
+            });
+        }
+
+        setupEventListeners();
+        injectUserContentToSidebar();
+        renderTopic('networking-fundamentals', 'osi-model');
     </script>
 </body>
 </html>
