@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DC Tech Hub | Data Center Reference Tool</title>
+    <meta name="description" content="Production-grade knowledge base and reference tool for Data Center Technicians.">
+    <!-- Google Fonts -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-deep: #0d1117;
+            --bg-card: #161b22;
+            --bg-sidebar: #010409;
+            --cyan: #00d4ff;
+            --cyan-glow: rgba(0, 212, 255, 0.3);
+            --amber: #f59e0b;
+            --amber-glow: rgba(245, 158, 11, 0.3);
+            --text-main: #c9d1d9;
+            --text-dim: #8b949e;
+            --border: #30363d;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'IBM Plex Sans', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Scan-line Overlay */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9999;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+
+        /* Global UI Elements */
+        header {
+            height: 64px;
+            background: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-right: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            background: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan);
+            border-radius: 2px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            background: var(--bg-deep);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-container input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px var(--cyan-glow);
+        }
+
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        aside {
+            width: 300px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 24px 0;
+            transition: var(--transition);
+        }
+
+        .nav-category {
+            margin-bottom: 8px;
+        }
+
+        .nav-category-header {
+            padding: 10px 24px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .nav-category-header:hover {
+            color: var(--cyan);
+        }
+
+        .nav-topics {
+            padding-left: 0;
+            display: none;
+        }
+
+        .nav-category.active .nav-topics {
+            display: block;
+        }
+
+        .nav-topic-link {
+            padding: 8px 40px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            cursor: pointer;
+            display: block;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .nav-topic-link:hover {
+            background: rgba(0, 212, 255, 0.05);
+            color: var(--cyan);
+        }
+
+        .nav-topic-link.active {
+            color: var(--cyan);
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: var(--cyan);
+        }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 48px;
+            background: radial-gradient(circle at top right, rgba(0, 212, 255, 0.02), transparent 40%);
+        }
+
+        .content-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .topic-header {
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .summary {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            max-width: 800px;
+        }
+
+        /* Card Grids */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 20px var(--cyan-glow);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            font-family: var(--font-mono);
+            color: var(--cyan);
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 64px;
+            height: 64px;
+            background: var(--bg-deep);
+            border: 2px solid var(--cyan);
+            color: var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 20px var(--cyan-glow);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: var(--cyan);
+            color: var(--bg-deep);
+        }
+
+        /* Side Drawer */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            z-index: 10000;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100%;
+            background: var(--bg-sidebar);
+            border-left: 1px solid var(--border);
+            padding: 40px;
+            transition: transform 0.4s ease;
+            z-index: 10001;
+            overflow-y: auto;
+        }
+
+        .drawer.open {
+            transform: translateX(-450px);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            aside { width: 0; position: absolute; left: -300px; }
+            main { padding: 24px; }
+            .drawer { width: 100%; right: -100%; }
+            .drawer.open { transform: translateX(-100%); }
+        }
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .search-result-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">DC TECH HUB</div>
+        <div class="search-container">
+            <input type="text" id="globalSearch" placeholder="SEARCH SYSTEM [KEYWORDS, CONCEPTS, STANDARDS]..." autocomplete="off">
+            <div id="searchResults" class="search-results"></div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside id="sidebar">
+            <!-- Polled from JS -->
+        </aside>
+        
+        <main id="contentArea">
+            <div class="content-container">
+                <!-- Welcome Screen / Topic Render -->
+                <div class="topic-header">
+                    <span class="category-badge">System Ready</span>
+                    <h1>KNOWLEDGE BASE V1.0</h1>
+                    <p class="summary">Select a category from the terminal on the left to begin data retrieval.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <button class="fab" id="addBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y1="19"></line><line x1="5" y1="12" x2="19" y1="12"></line></svg>
+    </button>
+
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+    <div class="drawer" id="drawer">
+        <h2 style="font-family: var(--font-mono); margin-bottom: 24px; color: var(--cyan); border-bottom: 1px solid var(--border); padding-bottom: 15px">+ DATA INJECTION</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div>
+                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">CATEGORY</label>
+                <select id="newCat" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-mono)">
+                    <option value="networking-fundamentals">Networking Fundamentals</option>
+                    <option value="physical-infrastructure">Physical Infrastructure</option>
+                    <option value="cabling-connectivity">Cabling & Connectivity</option>
+                    <option value="power-cooling">Power & Cooling</option>
+                    <option value="monitoring-tools">Monitoring & Tools</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">TOPIC NAME</label>
+                <input type="text" id="newName" placeholder="e.g. BGP Best Practices" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans)">
+            </div>
+
+            <div>
+                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">NOTES (MARKDOWN SUPPORTED)</label>
+                <textarea id="newNotes" rows="6" placeholder="Technical details..." style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); resize: vertical"></textarea>
+            </div>
+
+            <div>
+                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">VIDEO LINK (YOUTUBE EMBED URL)</label>
+                <input type="text" id="newVideo" placeholder="https://www.youtube.com/embed/..." style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans)">
+            </div>
+
+            <button id="saveBtn" style="margin-top: 20px; background: var(--cyan); color: var(--bg-deep); border: none; padding: 15px; border-radius: 4px; font-family: var(--font-mono); font-weight: 700; cursor: pointer; transition: var(--transition)">
+                INITIALIZE INJECTION
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const TECH_CONTENT = {
+            "networking-fundamentals": {
+                title: "Networking Fundamentals",
+                topics: {
+                    "osi-model": {
+                        title: "OSI Model (Open Systems Interconnection)",
+                        summary: "The Open Systems Interconnection model is a conceptual framework used to understand network interactions in seven distinct layers, ensuring interoperability between different communication systems.",
+                        image: "./assets/dc_aisle.png",
+                        concepts: [
+                            { title: "Layer 7: Application", text: "Direct interaction with software applications. Use Case: Web browsing (HTTP), email (SMTP)." },
+                            { title: "Layer 4: Transport", text: "Host-to-host communication. Use Case: Reliable data stream (TCP) vs. fast streaming (UDP)." },
+                            { title: "Layer 3: Network", text: "Logical addressing and path determination. Use Case: Routing packets across different subnets using IP." },
+                            { title: "Layer 2: Data Link", text: "Physical addressing (MAC). Use Case: Direct communication between devices on the same local switch." }
+                        ],
+                        diagram: "osi",
+                        specs: [
+                            ["Layer", "Name", "Data Unit", "Example Protocols"],
+                            ["7", "Application", "Data", "HTTP, DNS, FTP, SNMP"],
+                            ["6", "Presentation", "Data", "SSL, SSH, JPEG, ASCII"],
+                            ["5", "Session", "Data", "RPC, Sockets, NetBIOS"],
+                            ["4", "Transport", "Segment", "TCP, UDP, SCTP"],
+                            ["3", "Network", "Packet", "IPv4, IPv6, ICMP, IPsec"],
+                            ["2", "Data Link", "Frame", "Ethernet, PPP, Switch"],
+                            ["1", "Physical", "Bit", "Cat6, Fiber, Hub"]
+                        ],
+                        related: ["TCP/IP", "VLANs", "LLDP"],
+                        proTip: "Troubleshoot from the bottom up. If the Physical layer (L1) is down, no other layer will work."
+                    },
+                    "vlan": {
+                        title: "VLAN (Virtual Local Area Network)",
+                        summary: "VLANs partition a physical network into multiple logical segments, enhancing security and reducing broadcast traffic overhead.",
+                        concepts: [
+                            { title: "Logic Segmentation", text: "Separates traffic (e.g., Management vs. Data) without needing separate switches." },
+                            { title: "802.1Q Tagging", text: "The IEEE standard for tagging frames with a VLAN ID as they move across trunk links." }
+                        ],
+                        related: ["802.1Q", "STP", "Trunking"]
+                    },
+                    "tcp-ip": {
+                        title: "TCP/IP Stack (Transmission Control Protocol / Internet Protocol)",
+                        summary: "The primary suite of protocols used for the modern internet, more streamlined than the OSI model.",
+                        concepts: [
+                            { title: "TCP (Transmission Control)", text: "Connection-oriented with error checking. Use Case: Database transfers, web pages." },
+                            { title: "UDP (User Datagram)", text: "Connectionless, low overhead. Use Case: VoIP, Gaming, Video streaming." }
+                        ]
+                    },
+                    "subnetting": {
+                        title: "Subnetting & CIDR (Classless Inter-Domain Routing)",
+                        summary: "Dividing a network into sub-networks to optimize address space and improve routing efficiency.",
+                        concepts: [
+                            { title: "Subnet Mask", text: "Determines which part of the IP is the network vs. the host." },
+                            { title: "CIDR Usage", text: "Allows for flexible allocation of IP addresses (e.g., /24 instead of fixed Class C)." }
+                        ]
+                    }
+                }
+            },
+            "physical-infrastructure": {
+                title: "Physical Infrastructure",
+                topics: {
+                    "rack-units": {
+                        title: "Rack Units (U / RU)",
+                        summary: "The standard unit of vertical space in data center racks. 1U = 1.75 inches (44.45 mm).",
+                        image: "./assets/rack.png",
+                        diagram: "rack",
+                        concepts: [
+                            { title: "EIA-310 Standard", text: "Defines the physical dimensions of the rack, holes, and mounting equipment." },
+                            { title: "Density Management", text: "Balancing the number of servers per rack with available power and cooling." }
+                        ],
+                        specs: [
+                            ["U Value", "Height (Inches)", "Height (mm)", "Common Equip"],
+                            ["1U", "1.75\"", "44.45", "TOR Switch, Firewall"],
+                            ["2U", "3.5\"", "88.9", "Standard Compute Server"],
+                            ["4U", "7.0\"", "177.8", "Storage Arrays, GPU Enclosures"]
+                        ]
+                    },
+                    "pdu": {
+                        title: "PDU (Power Distribution Unit)",
+                        summary: "Devices used to distribute power to computers and networking equipment within a rack.",
+                        concepts: [
+                            { title: "Basic PDU", text: "Non-intelligent power strip." },
+                            { title: "Metered PDU", text: "Shows local current draw to prevent overloading." },
+                            { title: "Switched/Intelligent", text: "Allows for remote outlet control (rebooting) and per-outlet monitoring." }
+                        ]
+                    }
+                }
+            },
+            "cabling-connectivity": {
+                title: "Cabling & Connectivity",
+                topics: {
+                    "fiber-optics": {
+                        title: "Fiber Optic Connectivity",
+                        summary: "Using light signals through glass strands to transmit data at extremely high speeds over long distances.",
+                        image: "./assets/fiber.png",
+                        diagram: "fiber",
+                        concepts: [
+                            { title: "SMF (Single-Mode)", text: "Long-range (kilometers). Use Case: Inter-building or service provider backbones." },
+                            { title: "MMF (Multi-Mode)", text: "Short-range (meters). Use Case: Intra-rack or intra-room patching." }
+                        ],
+                        specs: [
+                            ["Standard", "Mode", "Core Dia", "Bandwidth", "Max Reach"],
+                            ["OM3", "Multi", "50µm", "10Gb/s", "300m"],
+                            ["OM4", "Multi", "50µm", "40Gb/s", "400m"],
+                            ["OS2", "Single", "9µm", "100Gb/s+", "40km"]
+                        ]
+                    },
+                    "connectors": {
+                        title: "Connector Types",
+                        summary: "Standardized physical interfaces for fiber and copper cables.",
+                        concepts: [
+                            { title: "LC (Lucent Connector)", text: "Small form factor, standard for high-density fiber patching." },
+                            { title: "MTP/MPO", text: "Multi-fiber Push On. Used for 40G/100G/400G trunking (12-24 fibers)." },
+                            { title: "RJ45", text: "Standard 8-pin connector for copper (Cat6/Cat6a) interfaces." }
+                        ]
+                    }
+                }
+            },
+            "protocols-standards": {
+                title: "Protocols & Standards",
+                topics: {
+                    "lacp": {
+                        title: "LACP (Link Aggregation Control Protocol - 802.3ad)",
+                        summary: "Allows multiple physical links to be combined into a single logical channel for redundancy and increased bandwidth.",
+                        concepts: [
+                            { title: "Active Mode", text: "Initiates LACP negotiation with the neighbor." },
+                            { title: "Passive Mode", text: "Waits for the neighbor to initiate negotiation." }
+                        ],
+                        proTip: "LACP load balancing is flow-based, meaning a single TCP stream will never exceed the speed of one physical link."
+                    }
+                }
+            },
+            "power-cooling": {
+                title: "Power & Cooling",
+                topics: {
+                    "hot-cold-aisle": {
+                        title: "Aisle Containment Systems",
+                        summary: "Separating hot exhaust air from cold supply air to maximize cooling efficiency.",
+                        diagram: "cooling",
+                        concepts: [
+                            { title: "CAC (Cold Aisle Containment)", text: "Encloses the cold aisle to ensure all supply air goes through the racks." },
+                            { title: "HAC (Hot Aisle Containment)", text: "Encloses the hot aisle to duct exhaust air directly back to CRAC units." }
+                        ],
+                        proTip: "Effective containment allows raising the chilled water temperature, saving significant energy."
+                    },
+                    "pue-metric": {
+                        title: "PUE (Power Usage Effectiveness)",
+                        summary: "The industry standard for measuring data center energy efficiency. PUE = Total Power / IT Power.",
+                        concepts: [
+                            { title: "Ideal PUE", text: "1.0 would mean 100% of power goes to IT. Typical modern DCs are 1.1 - 1.4." },
+                            { title: "PDU Efficiency", text: "Losses in UPS and PDUs contribute to a higher PUE." }
+                        ]
+                    }
+                }
+            },
+            "glossary": {
+                title: "Glossary (50+ Technical Terms)",
+                isGlossary: true,
+                terms: {
+                    "ARP": "Address Resolution Protocol: Resolves IP addresses to physical MAC addresses.",
+                    "ATS": "Automatic Transfer Switch: Switches power source between A and B feeds automatically upon failure.",
+                    "BGP": "Border Gateway Protocol: The routing protocol of the internet using paths and policies.",
+                    "CDP": "Cisco Discovery Protocol: Proprietary L2 protocol to share info between Cisco devices.",
+                    "CIDR": "Classless Inter-Domain Routing: Method for flexible IP address allocation.",
+                    "CLI": "Command Line Interface: Text-based interface for configuring devices.",
+                    "CRAC": "Computer Room Air Conditioner: Maintains temperature, air distribution and humidity.",
+                    "DAC": "Direct Attach Copper: Passive twinax cable with integrated transceivers for mid-reach (up to 7m).",
+                    "DCBX": "Data Center Bridging Exchange: L2 protocol for exchanging capabilities between devices.",
+                    "DCIM": "Data Center Infrastructure Management: Software to monitor power, cooling, and assets.",
+                    "DHCP": "Dynamic Host Configuration Protocol: Automatically assigns IP addresses to devices.",
+                    "DNS": "Domain Name System: Translates human-readable names (web.com) to IP addresses.",
+                    "EIA": "Electronic Industries Alliance: Organization that sets standards like the rack dimensions.",
+                    "FCoE": "Fibre Channel over Ethernet: Encapsulates Fibre Channel frames over Ethernet networks.",
+                    "HSRP": "Hot Standby Router Protocol: Provides gateway redundancy for IP networks.",
+                    "ICMP": "Internet Control Message Protocol: Used for diagnostics and error reporting (ping, traceroute).",
+                    "IP": "Internet Protocol: Network layer protocol for addressing and routing.",
+                    "iSCSI": "Internet Small Computer Systems Interface: IP-based storage networking standard.",
+                    "KVM": "Keyboard, Video, Mouse: Hardware allowing access to multiple servers from one console.",
+                    "LACP": "Link Aggregation Control Protocol: Bundles multiple physical links into one logical link.",
+                    "LLDP": "Link Layer Discovery Protocol: Vendor-neutral neighbor discovery protocol (IEEE 802.1AB).",
+                    "MAC": "Media Access Control: Unique hardware identifier for network interfaces.",
+                    "MMF": "Multi-Mode Fiber: Used for short distance, uses LED or VCSEL light sources.",
+                    "MTP": "Multi-fiber Termination Push-on: High performance MPO connector.",
+                    "MTU": "Maximum Transmission Unit: Largest data packet size acceptable by the network (standard 1500).",
+                    "N+1": "Redundancy Level: System has one extra component beyond the minimum required.",
+                    "NETFLOW": "Standard for collecting IP network traffic as it enters/leaves an interface.",
+                    "NIC": "Network Interface Card: Hardware that connects a computer to a computer network.",
+                    "OSI": "Open Systems Interconnection: Theoretical model for network communications.",
+                    "OSPF": "Open Shortest Path First: Link-state interior gateway routing protocol.",
+                    "PDU": "Power Distribution Unit: Device with multiple outlets to distribute power to equipment.",
+                    "PING": "Packet InterNet Groper: Utility to test reachability of a host.",
+                    "PUE": "Power Usage Effectiveness: Ratio of total facility power to IT equipment power.",
+                    "QSFP": "Quad Small Form-factor Pluggable: Compact, hot-pluggable transceiver (4 lanes).",
+                    "RFC": "Request for Comments: Document describing internet standards and protocols.",
+                    "RJ45": "Registered Jack 45: 8-pin connector for ethernet cables.",
+                    "SAN": "Storage Area Network: Dedicated high-speed network for block-level data storage.",
+                    "SFP": "Small Form-factor Pluggable: Compact, hot-pluggable transceiver module.",
+                    "SMF": "Single-Mode Fiber: Long distance fiber using laser light sources.",
+                    "SNMP": "Simple Network Management Protocol: Used for managing devices on IP networks.",
+                    "STP": "Spanning Tree Protocol: Prevents loops in Ethernet networks (IEEE 802.1D).",
+                    "SYSLOG": "Standard for message logging on network devices.",
+                    "TCP": "Transmission Control Protocol: Reliable, connection-oriented transport protocol.",
+                    "TRACEROUTE": "Tool to trace the path and measure transit delays of packets.",
+                    "UPS": "Uninterruptible Power Supply: Battery backup to provide near-instantaneous protection.",
+                    "VLAN": "Virtual Local Area Network: logical partition of a layer 2 network.",
+                    "VOIP": "Voice over Internet Protocol: Group of technologies for delivering voice over IP.",
+                    "VTP": "VLAN Trunking Protocol: Proprietary protocol to manage VLANs across switches.",
+                    "WAP": "Wireless Access Point: Networking hardware that allows Wi-Fi devices to connect.",
+                    "WWN": "World Wide Name: Unique identifier used in storage area networks."
+                }
+            }
+        };
+
+        let userContent = JSON.parse(localStorage.getItem('dc_user_content') || '[]');
+
+        function init() {
+            renderSidebar();
+            setupEventListeners();
+        }
+
+        function renderSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.innerHTML = '';
+
+            for (const [catId, category] of Object.entries(TECH_CONTENT)) {
+                const catEl = document.createElement('div');
+                catEl.className = 'nav-category';
+                catEl.id = `cat-${catId}`;
+
+                let topicsHTML = '';
+                if (category.topics) {
+                    for (const [topicId, topic] of Object.entries(category.topics)) {
+                        topicsHTML += `<div class="nav-topic-link" data-path="${catId}/${topicId}">${topic.title}</div>`;
+                    }
+                } else if (category.isGlossary) {
+                    topicsHTML += `<div class="nav-topic-link" data-path="${catId}/main">Full Glossary</div>`;
+                }
+
+                // Append user content for this category
+                const catUserContent = userContent.filter(c => c.category === catId);
+                catUserContent.forEach((uc, index) => {
+                    topicsHTML += `<div class="nav-topic-link" data-user="true" data-index="${index}">${uc.name} <span style="font-size: 10px; color: var(--amber)">*</span></div>`;
+                });
+
+                catEl.innerHTML = `
+                    <div class="nav-category-header" onclick="toggleCategory('${catId}')">
+                        ${category.title}
+                        <span>+</span>
+                    </div>
+                    <div class="nav-topics">${topicsHTML}</div>
+                `;
+                sidebar.appendChild(catEl);
+            }
+        }
+
+        function toggleCategory(catId) {
+            const el = document.getElementById(`cat-${catId}`);
+            el.classList.toggle('active');
+            const icon = el.querySelector('span');
+            icon.textContent = el.classList.contains('active') ? '-' : '+';
+        }
+
+        function setupEventListeners() {
+            // Navigation clicks
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('nav-topic-link')) {
+                    const path = e.target.getAttribute('data-path');
+                    const isUser = e.target.getAttribute('data-user') === 'true';
+                    
+                    document.querySelectorAll('.nav-topic-link').forEach(l => l.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    if (isUser) {
+                        const index = e.target.getAttribute('data-index');
+                        renderUserTopic(userContent[index]);
+                    } else if (path) {
+                        const [catId, topicId] = path.split('/');
+                        renderTopic(catId, topicId);
+                    }
+                }
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('globalSearch');
+            const searchResults = document.getElementById('searchResults');
+
+            searchInput.oninput = (e) => {
+                const query = e.target.value.toLowerCase();
+                if (!query) {
+                    searchResults.innerHTML = '';
+                    searchResults.style.display = 'none';
+                    return;
+                }
+
+                let matches = [];
+                for (const [catId, category] of Object.entries(TECH_CONTENT)) {
+                    if (category.topics) {
+                        for (const [topicId, topic] of Object.entries(category.topics)) {
+                            if (topic.title.toLowerCase().includes(query) || topic.summary.toLowerCase().includes(query)) {
+                                matches.push({ title: topic.title, cat: category.title, path: `${catId}/${topicId}` });
+                            }
+                        }
+                    }
+                    if (category.isGlossary) {
+                        for (const [term, def] of Object.entries(category.terms)) {
+                            if (term.toLowerCase().includes(query) || def.toLowerCase().includes(query)) {
+                                matches.push({ title: `Term: ${term}`, cat: "Glossary", path: "glossary/main" });
+                            }
+                        }
+                    }
+                }
+                userContent.forEach((uc, index) => {
+                    if (uc.name.toLowerCase().includes(query)) {
+                        matches.push({ title: uc.name, cat: "User Content", userIndex: index });
+                    }
+                });
+
+                if (matches.length > 0) {
+                    searchResults.innerHTML = matches.slice(0, 10).map(m => `
+                        <div class="search-result-item" onclick="${m.userIndex !== undefined ? `viewUser(${m.userIndex})` : `viewTopic('${m.path}')`}">
+                            <div style="font-family: var(--font-mono); color: var(--cyan)">${m.title}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-dim)">${m.cat}</div>
+                        </div>
+                    `).join('');
+                    searchResults.style.display = 'block';
+                } else {
+                    searchResults.innerHTML = '<div style="padding: 10px; color: var(--text-dim)">No matches found in database.</div>';
+                    searchResults.style.display = 'block';
+                }
+            };
+
+            // Floating Button & Drawer
+            document.getElementById('addBtn').onclick = () => {
+                document.getElementById('drawer').classList.add('open');
+                document.getElementById('drawerOverlay').style.display = 'block';
+            };
+
+            document.getElementById('drawerOverlay').onclick = () => {
+                document.getElementById('drawer').classList.remove('open');
+                document.getElementById('drawerOverlay').style.display = 'none';
+            };
+
+            // Save User Content
+            document.getElementById('saveBtn').onclick = () => {
+                const name = document.getElementById('newName').value;
+                const category = document.getElementById('newCat').value;
+                const notes = document.getElementById('newNotes').value;
+                const video = document.getElementById('newVideo').value;
+
+                if (!name) { alert("Topic name required."); return; }
+
+                const newItem = { name, category, notes, video, timestamp: Date.now() };
+                userContent.push(newItem);
+                localStorage.setItem('dc_user_content', JSON.stringify(userContent));
+
+                document.getElementById('drawer').classList.remove('open');
+                document.getElementById('drawerOverlay').style.display = 'none';
+                
+                document.getElementById('newName').value = '';
+                document.getElementById('newNotes').value = '';
+                document.getElementById('newVideo').value = '';
+
+                renderSidebar();
+                renderUserTopic(newItem);
+            };
+        }
+
+        function viewTopic(path) {
+            const [catId, topicId] = path.split('/');
+            renderTopic(catId, topicId);
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('globalSearch').value = '';
+        }
+
+        function viewUser(index) {
+            renderUserTopic(userContent[index]);
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('globalSearch').value = '';
+        }
+
+        function renderTopic(catId, topicId) {
+            const contentArea = document.getElementById('contentArea');
+            const category = TECH_CONTENT[catId];
+            
+            if (category.isGlossary) {
+                renderGlossary();
+                return;
+            }
+
+            const topic = category.topics[topicId];
+            
+            let html = `
+                <div class="content-container">
+                    <div class="topic-header">
+                        <span class="category-badge">${category.title}</span>
+                        <h1>${topic.title}</h1>
+                        <p class="summary">${topic.summary}</p>
+                    </div>
+
+                    ${topic.image ? `
+                        <div style="margin-bottom: 32px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border)">
+                            <img src="${topic.image}" alt="${topic.title}" style="width: 100%; height: 300px; object-fit: cover; filter: brightness(0.8) contrast(1.2)">
+                        </div>
+                    ` : ''}
+
+                    ${topic.concepts ? `
+                        <div class="card-grid">
+                            ${topic.concepts.map(c => `
+                                <div class="card">
+                                    <h3>${c.title}</h3>
+                                    <p>${c.text}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${topic.diagram ? `
+                        <div style="margin-top: 40px">
+                            <h3 style="font-family: var(--font-mono); margin-bottom: 16px; color: var(--text-dim); font-size: 0.8rem">SYSTEM ANALYTICAL DIAGRAM</h3>
+                            <div class="diagram-area" id="diagram-${topic.diagram}"></div>
+                        </div>
+                    ` : ''}
+
+                    ${topic.specs ? `
+                        <div style="margin-top: 40px">
+                            <h3 style="font-family: var(--font-mono); margin-bottom: 16px; color: var(--text-dim); font-size: 0.8rem">TECHNICAL SPECIFICATIONS & USE CASES</h3>
+                            <table style="width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.9rem">
+                                ${topic.specs.map((row, i) => `
+                                    <tr style="${i === 0 ? 'background: var(--bg-card); color: var(--cyan)' : 'border-bottom: 1px solid var(--border)'}">
+                                        ${row.map(cell => `<td style="padding: 12px">${cell}</td>`).join('')}
+                                    </tr>
+                                `).join('')}
+                            </table>
+                        </div>
+                    ` : ''}
+
+                    ${topic.proTip ? `
+                        <div style="margin-top: 40px; padding: 24px; border-left: 4px solid var(--amber); background: rgba(245, 158, 11, 0.05); border-radius: 0 8px 8px 0">
+                            <h4 style="color: var(--amber); font-family: var(--font-mono); margin-bottom: 8px; letter-spacing: 1px">FIELD ENGINEER PRO-TIP</h4>
+                            <p>${topic.proTip}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            contentArea.innerHTML = html;
+            
+            if (topic.diagram) renderDiagram(topic.diagram);
+        }
+
+        function renderGlossary() {
+            const glossary = TECH_CONTENT['glossary'];
+            let html = `
+                <div class="content-container">
+                    <div class="topic-header">
+                        <span class="category-badge">Reference</span>
+                        <h1>TERMINOLOGY GLOSSARY</h1>
+                    </div>
+                    <div class="card-grid" style="grid-template-columns: 1fr">
+                        ${Object.entries(glossary.terms).sort().map(([term, def]) => `
+                            <div class="card" style="display: flex; gap: 20px; align-items: baseline">
+                                <span style="font-family: var(--font-mono); color: var(--cyan); min-width: 120px">${term}</span>
+                                <span style="color: var(--text-dim)">${def}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        function renderUserTopic(data) {
+            let html = `
+                <div class="content-container">
+                    <div class="topic-header">
+                        <span class="category-badge" style="border-color: var(--amber); color: var(--amber)">User Contributed</span>
+                        <h1>${data.name}</h1>
+                        <p class="summary">${data.notes || 'No description provided.'}</p>
+                    </div>
+                    ${data.video ? `
+                        <div style="margin-top: 24px; aspect-ratio: 16/9; background: #000; border: 1px solid var(--border)">
+                            <iframe width="100%" height="100%" src="${data.video}" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        function renderDiagram(type) {
+            const container = document.getElementById(`diagram-${type}`);
+            if (!container) return;
+
+            let svg = '';
+            if (type === 'osi') {
+                svg = `
+                    <svg viewBox="0 0 800 450" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid var(--border); padding: 20px">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="var(--cyan)" />
+                            </marker>
+                        </defs>
+                        <g font-family="JetBrains Mono" font-size="12">
+                            <text x="600" y="30" fill="var(--cyan)" font-weight="700">DATA FLOW DIRECTION</text>
+                            <line x1="650" y1="50" x2="650" y2="400" stroke="var(--cyan)" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5" />
+                            ${[7,6,5,4,3,2,1].map((l, i) => {
+                                const names = ["Application", "Presentation", "Session", "Transport", "Network", "Data Link", "Physical"];
+                                const examples = ["HTTP, DNS, FTP", "SSL, SSH, JPEG", "NetBIOS, RPC", "TCP, UDP", "IP, ICMP, IPsec", "Ethernet, MAC", "Cables, Bits, Hubs"];
+                                const encapsulation = ["Data", "Data", "Data", "Segment", "Packet", "Frame", "Bits"];
+                                const colors = i === 3 ? "#f59e0b" : "#00d4ff";
+                                return `
+                                    <g transform="translate(0, ${i*55})">
+                                        <rect x="50" y="20" width="350" height="40" fill="${colors}" fill-opacity="0.1" stroke="${colors}" stroke-width="2" />
+                                        <text x="70" y="45" fill="white" font-size="14">L${l}: ${names[i]}</text>
+                                        <rect x="410" y="20" width="100" height="40" fill="var(--bg-card)" stroke="var(--border)" />
+                                        <text x="425" y="45" fill="var(--text-dim)">${encapsulation[i]}</text>
+                                        <text x="520" y="45" fill="var(--text-dim)" font-size="10">➞ ${examples[i]}</text>
+                                    </g>
+                                `;
+                            }).join('')}
+                        </g>
+                    </svg>
+                `;
+            } else if (type === 'rack') {
+                svg = `
+                    <svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.3); border-radius: 8px">
+                        <rect x="100" y="20" width="200" height="460" fill="none" stroke="var(--border)" stroke-width="2" />
+                        ${Array.from({length: 42}).map((_, i) => `
+                            <line x1="100" y1="${20 + i*11}" x2="300" y2="${20 + i*11}" stroke="var(--border)" stroke-width="0.3" />
+                            ${i % 5 === 0 ? `<text x="75" y="${28 + i*11}" fill="var(--text-dim)" font-size="8">${42-i}U</text>` : ''}
+                        `).join('')}
+                        <g filter="drop-shadow(0 0 5px var(--cyan-glow))">
+                            <rect x="105" y="400" width="190" height="44" fill="var(--cyan)" fill-opacity="0.1" stroke="var(--cyan)" />
+                            <text x="135" y="425" fill="white" font-size="10">STORAGE NODE A</text>
+                            <rect x="105" y="367" width="190" height="22" fill="var(--amber)" fill-opacity="0.1" stroke="var(--amber)" />
+                            <text x="145" y="382" fill="white" font-size="9">DATABASE SRV</text>
+                            <rect x="105" y="355" width="190" height="11" fill="var(--cyan)" fill-opacity="0.1" stroke="var(--cyan)" />
+                            <text x="155" y="363" fill="white" font-size="7">TOR SWITCH</text>
+                        </g>
+                        <text x="120" y="505" fill="var(--text-dim)" font-size="10">EIA-310 STANDARD RACK</text>
+                    </svg>
+                `;
+            } else if (type === 'cooling') {
+                svg = `
+                    <svg viewBox="0 0 600 350" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid var(--border)">
+                        <rect x="100" y="80" width="80" height="180" fill="var(--bg-card)" stroke="var(--border)" fill-opacity="0.8" />
+                        <rect x="260" y="80" width="80" height="180" fill="var(--bg-card)" stroke="var(--border)" fill-opacity="0.8" />
+                        <rect x="420" y="80" width="80" height="180" fill="var(--bg-card)" stroke="var(--border)" fill-opacity="0.8" />
+                        
+                        <g stroke="var(--cyan)" stroke-width="2" fill="none">
+                            <path d="M 220 340 L 220 100" stroke-dasharray="10,5" />
+                            <path d="M 180 150 L 210 150" />
+                            <path d="M 260 150 L 230 150" />
+                        </g>
+                        <text x="180" y="330" fill="var(--cyan)" font-size="10">COLD AIR INTAKE (PERF TILES)</text>
+                        
+                        <g stroke="var(--amber)" stroke-width="2" fill="none">
+                            <path d="M 380 340 L 380 100" stroke-dasharray="10,5" opacity="0.5" />
+                            <circle cx="340" cy="120" r="15" stroke="var(--amber)" fill="var(--amber)" fill-opacity="0.1" />
+                            <text x="333" y="125" fill="var(--amber)" font-size="12">♨</text>
+                        </g>
+                        <text x="360" y="60" fill="var(--amber)" font-size="10">HOT AIR RETURNS TO CRAC</text>
+                        
+                        <text x="110" y="280" fill="var(--text-dim)" font-size="10">ROW 101/A</text>
+                    </svg>
+                `;
+            } else if (type === 'fiber') {
+                svg = `
+                    <svg viewBox="0 0 640 200" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.3); border-radius: 8px">
+                        <g transform="translate(60, 50)">
+                            <path d="M 0 0 H 60 V 50 H 0 Z" fill="none" stroke="var(--cyan)" stroke-width="2" />
+                            <circle cx="15" cy="20" r="4" fill="var(--cyan)" />
+                            <circle cx="45" cy="20" r="4" fill="var(--cyan)" />
+                            <text x="0" y="75" fill="var(--cyan)" font-size="12" font-family="JetBrains Mono">LC DUPLEX</text>
+                        </g>
+                        <g transform="translate(260, 50)">
+                            <path d="M 0 5 H 80 V 45 H 0 Z" fill="none" stroke="var(--amber)" stroke-width="3" />
+                            <rect x="10" y="15" width="60" height="20" fill="var(--amber)" fill-opacity="0.2" />
+                            <text x="-10" y="75" fill="var(--amber)" font-size="12" font-family="JetBrains Mono">MTP/MPO (12-FIBER)</text>
+                        </g>
+                        <g transform="translate(500, 50)">
+                            <path d="M 0 0 L 20 -10 L 40 0 V 50 H 0 Z" fill="none" stroke="white" stroke-width="2" opacity="0.6" />
+                            <rect x="5" y="10" width="30" height="30" stroke="white" fill="none" />
+                            <text x="-5" y="75" fill="white" font-size="12" font-family="JetBrains Mono" opacity="0.6">RJ45 (COPPER)</text>
+                        </g>
+                    </svg>
+                `;
+            } else if (type === 'bgp') {
+                svg = `
+                    <svg viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.3); border-radius: 8px">
+                        <rect x="50" y="50" width="100" height="100" fill="var(--bg-card)" stroke="var(--cyan)" />
+                        <text x="60" y="100" fill="white" font-size="10">AS 65001</text>
+                        <rect x="450" y="50" width="100" height="100" fill="var(--bg-card)" stroke="var(--amber)" />
+                        <text x="460" y="100" fill="white" font-size="10">AS 65002</text>
+                        <line x1="150" y1="100" x2="450" y2="100" stroke="white" stroke-width="2" stroke-dasharray="5,5" />
+                        <text x="250" y="90" fill="var(--text-dim)" font-size="10">BGP PEERING (TCP 179)</text>
+                    </svg>
+                `;
+            }
+
+            container.innerHTML = svg;
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "dc-tech-hub",
+  "version": "1.0.0",
+  "description": "DC Tech Hub Standalone SPA",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx browser-sync start --server --files \"*.html\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
