@@ -3,27 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DC Tech Hub | Data Center Reference Tool</title>
-    <meta name="description" content="Production-grade knowledge base and reference tool for Data Center Technicians.">
-    <!-- Google Fonts -->
+    <title>Internet Playground | Fun & Clear Guide to Computer Networks</title>
+    <meta name="description" content="Learn computer networks easily with interactive animations, simple analogies for kids, and full technical specs for grown-ups.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
-
         :root {
-            --bg-deep: #0d1117;
-            --bg-card: #161b22;
-            --bg-sidebar: #010409;
-            --cyan: #00d4ff;
-            --cyan-glow: rgba(0, 212, 255, 0.3);
-            --amber: #f59e0b;
-            --amber-glow: rgba(245, 158, 11, 0.3);
-            --text-main: #c9d1d9;
-            --text-dim: #8b949e;
-            --border: #30363d;
-            --red: #ff4d4d;
+            /* Grown-up / Tech Mode Palette */
+            --bg-deep: #090d16;
+            --bg-card: rgba(16, 22, 37, 0.65);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #00d4ff;
+            --accent-glow: rgba(0, 212, 255, 0.35);
+            --accent-sec: #f59e0b;
+            --text-main: #e2e8f0;
+            --text-dim: #94a3b8;
+            --font-main: 'Outfit', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
-            --font-sans: 'IBM Plex Sans', sans-serif;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --border-radius: 12px;
+        }
+
+        /* Kid Mode Theme Variables Override */
+        body.kid-mode {
+            --bg-deep: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #f43f5e; /* Vibrant Rose */
+            --accent-glow: rgba(244, 63, 94, 0.4);
+            --accent-sec: #10b981; /* Bouncy emerald green */
+            --text-main: #f8fafc;
+            --text-dim: #cbd5e1;
+            --border-radius: 20px;
         }
 
         * {
@@ -35,130 +47,110 @@
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
-            font-family: var(--font-sans);
+            font-family: var(--font-main);
             line-height: 1.6;
             overflow-x: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            transition: background-color 0.5s ease, color 0.3s ease;
         }
 
-        /* Scan-line Overlay */
+        /* Subtle grid background */
         body::before {
-            content: " ";
-            display: block;
+            content: "";
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 9999;
-            background-size: 100% 4px, 3px 100%;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255, 0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
             pointer-events: none;
-            opacity: 0.15;
+            z-index: -1;
         }
 
-        /* Global UI Elements */
-        header {
-            height: 64px;
-            background: var(--bg-sidebar);
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Style */
+        aside {
+            width: 280px;
+            background-color: rgba(6, 9, 16, 0.95);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 24px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            padding: 0 24px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            gap: 12px;
         }
 
-        .logo {
-            font-family: var(--font-mono);
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--cyan);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-right: 40px;
+        .sidebar-header .logo-container {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-sec));
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            box-shadow: 0 0 15px var(--accent-glow);
+            font-size: 1.2rem;
+            animation: bounceLogo 3s infinite ease-in-out;
         }
 
-        .logo::before {
-            content: "";
-            width: 12px;
-            height: 12px;
-            background: var(--cyan);
-            box-shadow: 0 0 10px var(--cyan);
-            border-radius: 2px;
+        @keyframes bounceLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
         }
 
-        .search-container {
-            flex: 1;
-            max-width: 600px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .search-container input {
-            width: 100%;
-            background: var(--bg-deep);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: 4px;
+        .sidebar-header h2 {
             font-family: var(--font-mono);
-            outline: none;
-            transition: var(--transition);
+            font-size: 0.95rem;
+            letter-spacing: -0.5px;
+            color: var(--accent);
+            text-transform: uppercase;
         }
 
-        .search-container input:focus {
-            border-color: var(--cyan);
-            box-shadow: 0 0 15px var(--cyan-glow);
-        }
-
-        .main-layout {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Sidebar Navigation */
-        aside {
-            width: 300px;
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-            padding: 24px 0;
-            transition: var(--transition);
+        .nav-section {
+            padding: 16px 0;
         }
 
         .nav-category {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .nav-category-header {
-            padding: 10px 24px;
+            padding: 12px 24px;
             font-family: var(--font-mono);
             font-size: 0.75rem;
             color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
         }
 
         .nav-category-header:hover {
-            color: var(--cyan);
+            color: var(--accent);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .nav-topics {
-            padding-left: 0;
             display: none;
+            padding-bottom: 8px;
+            border-left: 2px solid var(--border);
+            margin-left: 30px;
         }
 
         .nav-category.active .nav-topics {
@@ -166,959 +158,1166 @@
         }
 
         .nav-topic-link {
-            padding: 8px 40px;
+            padding: 8px 16px;
             font-size: 0.9rem;
-            color: var(--text-main);
+            color: var(--text-dim);
             cursor: pointer;
-            display: block;
             transition: var(--transition);
-            border-left: 3px solid transparent;
+            border-radius: 6px;
+            margin: 2px 10px;
         }
 
         .nav-topic-link:hover {
-            background: rgba(0, 212, 255, 0.05);
-            color: var(--cyan);
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--accent);
         }
 
         .nav-topic-link.active {
-            color: var(--cyan);
-            background: rgba(0, 212, 255, 0.1);
-            border-left-color: var(--cyan);
+            color: var(--accent);
+            font-weight: 600;
+            background-color: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 3px 0 0 var(--accent);
+        }
+
+        /* Top Navigation Header */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 280px;
+            height: 70px;
+            background: rgba(9, 13, 22, 0.75);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            justify-content: space-between;
+            z-index: 90;
+            transition: var(--transition);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-container input {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 8px 16px 8px 36px;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-container input:focus {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.07);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .search-container .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #101625;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-top: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 200;
+        }
+
+        .search-result-item {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--accent);
+        }
+
+        /* Dual-Mode Toggle Switch Styling */
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.04);
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .toggle-label.active {
+            color: var(--accent);
+            text-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.15);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #fff;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
         }
 
         /* Main Content Area */
         main {
             flex: 1;
-            overflow-y: auto;
-            padding: 48px;
-            background: radial-gradient(circle at top right, rgba(0, 212, 255, 0.02), transparent 40%);
+            margin-left: 280px;
+            padding: 100px 40px 40px 40px;
+            max-width: 1300px;
+            transition: var(--transition);
         }
 
         .content-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            animation: fadeIn 0.5s ease-out;
+            animation: fadeIn 0.4s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .topic-header {
-            margin-bottom: 32px;
             border-bottom: 1px solid var(--border);
             padding-bottom: 24px;
         }
 
+        .topic-header h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .category-badge {
             display: inline-block;
-            padding: 4px 12px;
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid var(--cyan);
-            color: var(--cyan);
-            border-radius: 4px;
+            padding: 4px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
             font-family: var(--font-mono);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
+            border: 1px solid var(--accent);
+            border-radius: 20px;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            font-weight: bold;
         }
 
-        h1 {
-            font-family: var(--font-mono);
-            font-size: 2.5rem;
-            color: white;
-            margin-bottom: 16px;
-        }
-
-        .summary {
+        .topic-summary {
             font-size: 1.1rem;
             color: var(--text-dim);
-            max-width: 800px;
+            max-width: 900px;
         }
 
-        /* Card Grids */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px;
-            margin: 32px 0;
-        }
-
-        .card {
-            background: var(--bg-card);
+        /* Analogy Card Styling (Kid Mode) */
+        .analogy-card {
+            background: linear-gradient(135deg, var(--bg-card), rgba(255,255,255,0.01));
             border: 1px solid var(--border);
-            padding: 24px;
-            border-radius: 8px;
-            transition: var(--transition);
+            border-radius: var(--border-radius);
+            padding: 30px;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
-        .card:hover {
-            border-color: var(--cyan);
-            box-shadow: 0 0 20px var(--cyan-glow);
+        .analogy-card::before {
+            content: "💡";
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 4rem;
+            opacity: 0.06;
+            transform: rotate(15deg);
+        }
+
+        .analogy-card h3 {
+            font-size: 1.4rem;
+            color: var(--accent-sec);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analogy-card p {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--text-main);
+        }
+
+        /* Specs card for Tech Mode */
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .spec-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .spec-card:hover {
+            border-color: var(--accent);
             transform: translateY(-2px);
         }
 
-        .card h3 {
+        .spec-card h3 {
             font-family: var(--font-mono);
-            color: var(--cyan);
-            margin-bottom: 12px;
+            color: var(--accent);
             font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 32px;
-            right: 32px;
-            width: 64px;
-            height: 64px;
-            background: var(--bg-deep);
-            border: 2px solid var(--cyan);
-            color: var(--cyan);
-            border-radius: 50%;
+        /* Diagram / Animation Canvas Area */
+        .diagram-outer {
+            background: #04060b;
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .diagram-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 12px;
+        }
+
+        .diagram-header h4 {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            letter-spacing: 0.5px;
+        }
+
+        .diagram-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-btn:hover {
+            background: var(--accent);
+            color: #000;
+            font-weight: 600;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .diagram-canvas {
+            width: 100%;
+            min-height: 380px;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        /* YouTube Container */
+        .video-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .video-section h3 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+        }
+
+        .video-wrapper {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .video-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Interactive slide toggle inside animations */
+        .parameter-slider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .parameter-slider input[type="range"] {
+            accent-color: var(--accent);
             cursor: pointer;
-            box-shadow: 0 0 20px var(--cyan-glow);
-            transition: var(--transition);
+        }
+
+        /* Floating action button to add content */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-sec));
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px var(--accent-glow);
             z-index: 1000;
+            transition: var(--transition);
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
         }
 
         .fab:hover {
             transform: scale(1.1) rotate(90deg);
-            background: var(--cyan);
-            color: var(--bg-deep);
         }
 
-        /* Side Drawer */
+        /* Drawer overlays */
         .drawer-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(4px);
+            z-index: 1500;
             display: none;
-            z-index: 10000;
+            animation: fadeInSimple 0.25s ease;
         }
 
         .drawer {
             position: fixed;
             top: 0;
-            right: -450px;
-            width: 450px;
-            height: 100%;
-            background: var(--bg-sidebar);
+            right: -550px;
+            width: 550px;
+            height: 100vh;
+            background: #0e1321;
             border-left: 1px solid var(--border);
-            padding: 40px;
-            transition: transform 0.4s ease;
-            z-index: 10001;
+            z-index: 2000;
+            padding: 36px;
+            transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
             overflow-y: auto;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.6);
         }
 
         .drawer.open {
-            transform: translateX(-450px);
+            right: 0;
         }
 
-        /* Responsive */
-        @media (max-width: 900px) {
-            aside { width: 0; position: absolute; left: -300px; }
-            main { padding: 24px; }
-            .drawer { width: 100%; right: -100%; }
-            .drawer.open { transform: translateX(-100%); }
-        }
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-            display: none;
-            max-height: 400px;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 12px;
         }
 
-        .search-result-item {
-            padding: 12px 16px;
+        .drawer-header h3 {
+            font-family: var(--font-mono);
+            color: var(--accent);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 28px;
             cursor: pointer;
-            border-bottom: 1px solid var(--border);
             transition: var(--transition);
         }
 
-        .search-result-item:hover {
-            background: rgba(0, 212, 255, 0.1);
+        .close-btn:hover {
+            color: #fff;
         }
 
-        .search-result-item:last-child {
-            border-bottom: none;
+        .form-group {
+            margin-bottom: 20px;
         }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            color: var(--text-main);
+            border-radius: 8px;
+            font-family: var(--font-main);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-sec));
+            color: #000;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-family: var(--font-main);
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .save-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Toast notifications */
         .toast-container {
             position: fixed;
-            top: 24px;
-            right: 24px;
-            z-index: 100000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3000;
         }
 
         .toast {
-            background: var(--bg-card);
-            border: 1px solid var(--cyan);
-            border-left: 4px solid var(--cyan);
+            background: #162238;
+            border: 1px solid var(--accent);
+            color: #fff;
             padding: 12px 24px;
-            border-radius: 4px;
-            color: white;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            animation: slideIn 0.3s ease-out;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .tag-chip {
-            display: inline-block;
-            padding: 2px 10px;
-            background: rgba(139, 148, 158, 0.1);
-            border: 1px solid var(--border);
             border-radius: 20px;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-right: 6px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 20px var(--accent-glow);
+            margin-bottom: 8px;
+            animation: toastIn 0.3s ease forwards;
+        }
+
+        @keyframes toastIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInSimple {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* General specs table styling */
+        .tech-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
             margin-top: 8px;
-            cursor: pointer;
-            transition: var(--transition);
         }
 
-        .tag-chip:hover {
-            border-color: var(--cyan);
-            color: var(--cyan);
+        .tech-table th, .tech-table td {
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            text-align: left;
         }
 
-        #menuToggle {
-            display: none;
-            cursor: pointer;
-            padding: 10px;
-            margin-right: 15px;
-        }
-
-        @media (max-width: 900px) {
-            #menuToggle { display: block; }
-            aside.mobile-open { width: 300px; left: 0; z-index: 1000; }
-        }
-
-        .user-badge {
-            background: var(--amber);
-            color: black;
-            font-size: 0.6rem;
-            padding: 1px 4px;
-            border-radius: 2px;
+        .tech-table th {
+            color: var(--accent);
+            background: rgba(255,255,255,0.02);
             font-weight: bold;
-            margin-left: 8px;
-            vertical-align: middle;
         }
 
-        /* Analytical Highlights */
-        .highlight-box {
-            border-left: 2px solid var(--cyan);
-            padding-left: 15px;
-            margin: 20px 0;
-            background: rgba(0, 212, 255, 0.02);
+        /* Responsive design adjustments */
+        @media (max-width: 990px) {
+            aside {
+                left: -280px;
+            }
+            aside.mobile-open {
+                left: 0;
+            }
+            main {
+                margin-left: 0;
+                padding: 100px 20px 20px 20px;
+            }
+            .top-nav {
+                left: 0;
+                padding: 0 20px;
+            }
+            .mobile-menu-toggle {
+                display: block;
+            }
+            .search-container {
+                width: 180px;
+            }
+            .drawer {
+                width: 100%;
+                right: -100%;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div id="menuToggle">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><line x1="3" y1="12" x2="21" y1="12"></line><line x1="3" y1="6" x2="21" y1="6"></line><line x1="3" y1="18" x2="21" y1="18"></line></svg>
-        </div>
-        <div class="logo">DC TECH HUB</div>
-        <div class="search-container">
-            <input type="text" id="globalSearch" placeholder="SEARCH SYSTEM [KEYWORDS, CONCEPTS, STANDARDS]..." autocomplete="off">
-            <div id="searchResults" class="search-results"></div>
-        </div>
-    </header>
 
-    <div class="main-layout">
-        <aside id="sidebar">
-            <!-- Polled from JS -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar-nav">
+            <div class="sidebar-header">
+                <div class="logo-container">🌐</div>
+                <h2>NetPlayground</h2>
+            </div>
+            <nav class="nav-section" id="sidebar-container">
+                <!-- Dynamically populated from JS content database -->
+            </nav>
         </aside>
-        
+
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <button class="mobile-menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu">☰</button>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="globalSearch" placeholder="Search topic (e.g. TCP, Fiber)...">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+
+            <!-- Kid / Grown-up Mode Toggle Switch -->
+            <div class="toggle-wrapper">
+                <span class="toggle-label active" id="label-kid">👶 Analogy Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="modeToggle" checked>
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label" id="label-grownup">💻 Grown-up Tech</span>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
         <main id="contentArea">
-            <div class="content-container">
-                <!-- Welcome Screen / Topic Render -->
-                <div class="topic-header">
-                    <span class="category-badge">System Ready</span>
-                    <h1>KNOWLEDGE BASE V1.0</h1>
-                    <p class="summary">Select a category from the terminal on the left to begin data retrieval.</p>
-                </div>
+            <div style="display: flex; justify-content: center; align-items: center; height: 50vh; color: var(--accent); font-family: var(--font-mono);">
+                CONNECTING PLAYGROUND NETWORKS...
             </div>
         </main>
     </div>
 
-    <button class="fab" id="addBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y1="19"></line><line x1="5" y1="12" x2="19" y1="12"></line></svg>
-    </button>
+    <!-- Floating Action Button to Add Technical Content -->
+    <button class="fab" id="addBtn" aria-label="Add custom topic">+</button>
 
+    <!-- Content Injection Drawer -->
     <div class="drawer-overlay" id="drawerOverlay"></div>
     <div class="drawer" id="drawer">
-        <h2 style="font-family: var(--font-mono); margin-bottom: 24px; color: var(--cyan); border-bottom: 1px solid var(--border); padding-bottom: 15px">+ DATA INJECTION</h2>
-        
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-            <div>
-                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">CATEGORY</label>
-                <select id="newCat" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-mono)">
-                    <option value="networking-fundamentals">Networking Fundamentals</option>
-                    <option value="physical-infrastructure">Physical Infrastructure</option>
-                    <option value="cabling-connectivity">Cabling & Connectivity</option>
-                    <option value="power-cooling">Power & Cooling</option>
-                    <option value="monitoring-tools">Monitoring & Tools</option>
-                </select>
-            </div>
-
-            <div>
-                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">TOPIC NAME</label>
-                <input type="text" id="newName" placeholder="e.g. BGP Best Practices" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); outline: none">
-            </div>
-
-            <div>
-                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">IMAGE UPLOAD (PNG/JPG)</label>
-                <input type="file" id="newFile" accept="image/*" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-dim); padding: 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem">
-            </div>
-
-            <div>
-                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">PDF EMBED URL</label>
-                <input type="text" id="newPDF" placeholder="https://example.com/spec.pdf" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); outline: none">
-            </div>
-
-            <div>
-                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">TAGS (COMMA SEPARATED)</label>
-                <input type="text" id="newTags" placeholder="SFP, Fiber, OS2" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); outline: none">
-            </div>
-
-            <div>
-                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">NOTES (MARKDOWN SUPPORTED)</label>
-                <textarea id="newNotes" rows="4" placeholder="Technical details..." style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); resize: vertical; outline: none"></textarea>
-            </div>
-
-            <div>
-                <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px">VIDEO LINK (YOUTUBE EMBED URL)</label>
-                <input type="text" id="newVideo" placeholder="https://www.youtube.com/embed/..." style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-family: var(--font-sans); outline: none">
-            </div>
-
-            <button id="saveBtn" style="margin-top: 20px; background: var(--cyan); color: var(--bg-deep); border: none; padding: 15px; border-radius: 4px; font-family: var(--font-mono); font-weight: 700; cursor: pointer; transition: var(--transition); box-shadow: 0 0 15px var(--cyan-glow)">
-                INITIALIZE INJECTION
-            </button>
+        <div class="drawer-header">
+            <h3>INJECT CUSTOM NETWORK MODULE</h3>
+            <button class="close-btn" id="closeDrawer">&times;</button>
         </div>
+        
+        <div class="form-group">
+            <label>Topic Name</label>
+            <input type="text" id="newName" placeholder="e.g. Home Wi-Fi Setup">
+        </div>
+
+        <div class="form-group">
+            <label>Category Group</label>
+            <select id="newCat">
+                <option value="fundamentals">How We Talk (Fundamentals)</option>
+                <option value="physical">The Roads & Cables (Physical)</option>
+                <option value="rules">Playground Rules (Protocols)</option>
+                <option value="routing">Traffic Control (Routing)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Kid-friendly Story (Analogy)</label>
+            <textarea id="newStory" rows="4" placeholder="Explain it simply like a playground game or toy story..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Technical Details / Grown-up Facts</label>
+            <textarea id="newSpecs" rows="5" placeholder="Enter standard specifications, byte sizes, configuration parameters, or notes..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>YouTube Embed Link</label>
+            <input type="text" id="newVideo" placeholder="https://www.youtube.com/embed/...">
+        </div>
+
+        <div class="form-group">
+            <label>Tags (Comma separated)</label>
+            <input type="text" id="newTags" placeholder="WiFi, Cables, Rules">
+        </div>
+
+        <button class="save-btn" id="saveBtn">INJECT TO SYSTEM</button>
     </div>
 
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
+        // Core Content Database from the PDF Notes, redesigned for double mode
         const TECH_CONTENT = {
-            "networking-fundamentals": {
-                title: "Networking Fundamentals",
+            "fundamentals": {
+                title: "How We Talk",
                 topics: {
                     "osi-model": {
-                        title: "OSI Model (Open Systems Interconnection)",
-                        summary: "The Open Systems Interconnection model is a conceptual framework used to understand network interactions in seven distinct layers, ensuring interoperability between different communication systems.",
-                        image: "./assets/dc_aisle.png",
-                        concepts: [
-                            { title: "Layer 7: Application", text: "Direct interaction with software applications. Use Case: Web browsing (HTTP), email (SMTP)." },
-                            { title: "Layer 4: Transport", text: "Host-to-host communication. Use Case: Reliable data stream (TCP) vs. fast streaming (UDP)." },
-                            { title: "Layer 3: Network", text: "Logical addressing and path determination. Use Case: Routing packets across different subnets using IP." },
-                            { title: "Layer 2: Data Link", text: "Physical addressing (MAC). Use Case: Direct communication between devices on the same local switch." }
+                        title: "OSI Model (Mailing Game)",
+                        kidTitle: "✉️ The 7-Envelope Mailing Game",
+                        summary: "The OSI Model is a set of 7 steps computers take to pack a message inside multiple 'envelopes' before sending it over the network, and unpack it on the other side.",
+                        kidStory: "Imagine you want to send a drawing of a dinosaur to your friend down the street. You can't just throw it in the wind! First, you write the message (Application), convert it into neat writing (Presentation), open your mailbox link (Session), pack it in a safe postage box that checks for tears (Transport), write your friend's address on it (Network), load it into a post office truck (Data Link), and finally, the truck rolls down the physical street (Physical). Each step places your drawing inside a new, bigger envelope. On the receiving end, your friend opens the envelopes one by one in reverse to read your message!",
+                        grownupSpecs: {
+                            "Overview": "The OSI Model divides network communication into seven logical layers, defining standards to enable distinct hardware and software components to interact.",
+                            "Layer 7 (Application)": "Interacts with user software. Protocols: HTTP, DNS, SMTP, FTP.",
+                            "Layer 6 (Presentation)": "Formats, compresses, and encrypts data. Codecs: ASCII, JPEG, SSL/TLS.",
+                            "Layer 5 (Session)": "Coordinates and keeps tracks of connections. Protocols: Sockets, RPC.",
+                            "Layer 4 (Transport)": "Ensures host-to-host transmission integrity, flow control, and segmenting. Protocols: TCP, UDP.",
+                            "Layer 3 (Network)": "Resolves logical routing and packet addressing. Protocols: IP (IPv4, IPv6), ICMP, routers.",
+                            "Layer 2 (Data Link)": "Encapsulates packets into frames, handles physical MAC addresses and error checking. Protocols: Ethernet, PPP, switches.",
+                            "Layer 1 (Physical)": "Transmits raw bit streams over copper cables, fiber, or waves. Standards: Cat6, 10Base-T."
+                        },
+                        techSpecsTable: [
+                            ["Layer", "Name", "PDU Unit", "Example Device/Protocol"],
+                            ["L7", "Application", "Data", "HTTP, DNS, FTP"],
+                            ["L6", "Presentation", "Data", "SSL, Compression"],
+                            ["L5", "Session", "Data", "RPC, NetBIOS, Sockets"],
+                            ["L4", "Transport", "Segment", "TCP, UDP"],
+                            ["L3", "Network", "Packet", "IP, ICMP, Router"],
+                            ["L2", "Data Link", "Frame", "Ethernet, MAC, Switch"],
+                            ["L1", "Physical", "Bit", "Fiber, Cat6, Hub"]
                         ],
                         diagram: "osi",
-                        specs: [
-                            ["Layer", "Name", "Data Unit", "Example Protocols"],
-                            ["7", "Application", "Data", "HTTP, DNS, FTP, SNMP"],
-                            ["6", "Presentation", "Data", "SSL, SSH, JPEG, ASCII"],
-                            ["5", "Session", "Data", "RPC, Sockets, NetBIOS"],
-                            ["4", "Transport", "Segment", "TCP, UDP, SCTP"],
-                            ["3", "Network", "Packet", "IPv4, IPv6, ICMP, IPsec"],
-                            ["2", "Data Link", "Frame", "Ethernet, PPP, Switch"],
-                            ["1", "Physical", "Bit", "Cat6, Fiber, Hub"]
-                        ],
-                        related: ["TCP/IP", "VLANs", "LLDP"],
-                        proTip: "Troubleshoot from the bottom up. If the Physical layer (L1) is down, no other layer will work."
+                        video: "https://www.youtube.com/embed/HEEnLZV2wGI"
                     },
-                    "vlan": {
-                        title: "VLAN (Virtual Local Area Network)",
-                        summary: "VLANs partition a physical network into multiple logical segments, enhancing security and reducing broadcast traffic overhead.",
-                        concepts: [
-                            { title: "Logic Segmentation", text: "Separates traffic (e.g., Management vs. Data) without needing separate switches." },
-                            { title: "802.1Q Tagging", text: "The IEEE standard for tagging frames with a VLAN ID as they move across trunk links." }
+                    "clients-servers": {
+                        title: "Clients & Servers (Pizza Shop)",
+                        kidTitle: "🍕 Ordering Pizza vs sharing Toys",
+                        summary: "Computers talk in two main ways: Client-Server (asking a big boss machine for help) or Peer-to-Peer (friends sharing directly with each other).",
+                        kidStory: "When you want to search for a game or watch a video online, you are a Client! You send a request to a Server, which is like a giant Pizza Shop with all the pizzas. You ask for a cheese pizza, and the shop bakes it and sends it back to you. The Pizza Shop is in charge!\n\nBut sometimes, you play Peer-to-Peer (P2P). This is like you and a circle of friends sharing toys directly. There is no shop owner. You ask Bob for a toy truck, Bob gives it to you, and Bob asks you for a crayon. You are all equal partners!",
+                        grownupSpecs: {
+                            "Client-Server Model": "Centralized resource model. The server is a high-powered machine dedicated to handling client requests, checking passwords, and storing shared databases. Highly secure but has a Single Point of Failure (if the server crashes, all clients lose service).",
+                            "P2P Model (Peer-to-Peer)": "Decentralized model. Every node behaves as both a client and a server. Highly resilient and scales organically, but difficult to secure and administer.",
+                            "Applications": "Client-Server: HTTP (web browsing), email (SMTP/IMAP). P2P: BitTorrent, Skype (early architecture)."
+                        },
+                        techSpecsTable: [
+                            ["Feature", "Client-Server Model", "Peer-to-Peer (P2P) Model"],
+                            ["Administration", "Centralized, specialized admin required", "Decentralized, managed by individual users"],
+                            ["Cost", "Expensive dedicated hardware servers", "Inexpensive, uses normal client computers"],
+                            ["Scalability", "Server can get overloaded with clients", "Grows stronger as more peers join"],
+                            ["Security", "High security, centralized authentication", "Lower security, file integrity is harder to verify"]
                         ],
-                        related: ["802.1Q", "STP", "Trunking"]
-                    },
-                    "tcp-ip": {
-                        title: "TCP/IP Stack (Transmission Control Protocol / Internet Protocol)",
-                        summary: "The primary suite of protocols used for the modern internet, more streamlined than the OSI model.",
-                        concepts: [
-                            { title: "TCP (Transmission Control)", text: "Connection-oriented with error checking. Use Case: Database transfers, web pages." },
-                            { title: "UDP (User Datagram)", text: "Connectionless, low overhead. Use Case: VoIP, Gaming, Video streaming." }
-                        ],
-                        related: ["OSI Model", "Subnetting"]
-                    },
-                    "subnetting": {
-                        title: "Subnetting & CIDR (Classless Inter-Domain Routing)",
-                        summary: "Dividing a network into sub-networks to optimize address space and improve routing efficiency.",
-                        concepts: [
-                            { title: "Subnet Mask", text: "Determines which part of the IP is the network vs. the host." },
-                            { title: "CIDR Usage", text: "Allows for flexible allocation of IP addresses (e.g., /24 instead of fixed Class C)." }
-                        ]
+                        video: "https://www.youtube.com/embed/7yOu3M_4f8M"
                     }
                 }
             },
-            "physical-infrastructure": {
-                title: "Physical Infrastructure",
+            "physical": {
+                title: "Cables & Airwaves",
                 topics: {
-                    "rack-units": {
-                        title: "Rack Units (U / RU)",
-                        summary: "The standard unit of vertical space in data center racks. 1U = 1.75 inches (44.45 mm).",
-                        image: "./assets/rack.png",
-                        diagram: "rack",
-                        concepts: [
-                            { title: "EIA-310 Standard", text: "Defines the physical dimensions of the rack, holes, and mounting equipment." },
-                            { title: "Density Management", text: "Balancing the number of servers per rack with available power and cooling." }
-                        ],
-                        specs: [
-                            ["U Value", "Height (Inches)", "Height (mm)", "Common Equip"],
-                            ["1U", "1.75\"", "44.45", "TOR Switch, Firewall"],
-                            ["2U", "3.5\"", "88.9", "Standard Compute Server"],
-                            ["4U", "7.0\"", "177.8", "Storage Arrays, GPU Enclosures"]
-                        ]
+                    "switching": {
+                        title: "Packet vs Circuit Switching",
+                        kidTitle: "🚂 Train Tracks vs 🧩 Postcard Puzzles",
+                        summary: "Circuit switching locks a dedicated road for a chat, while Packet switching breaks files into pieces and routes them dynamically.",
+                        kidStory: "Imagine sending a 100-piece Lego puzzle to your friend.\n\nOption 1: **Circuit Switching (The Dedicated Train)**. You reserve a whole railroad track from your house to your friend's house. While you are using it, no other trains can run on it. You place all Legos in one train and it goes straight to them. It's safe, but if you stop sending Legos, the track sits empty and wasted!\n\nOption 2: **Packet Switching (The Postcard Puzzle)**. You put each Lego brick inside its own envelope (a packet) with the destination address. You send them through the post office. One envelope goes by bus, another by plane, and another by bicycle. They might arrive in a messy order, but your friend looks at the numbers on the envelopes and builds the Lego set. This is how the Internet works!",
+                        grownupSpecs: {
+                            "Circuit Switching": "Traditional telephone networks. Reserves physical path and bandwidth resources exclusively for the connection duration. Zero packet queuing or drops, but highly inefficient for bursty data transmissions.",
+                            "Packet Switching": "Modern Internet routing. Data is divided into discrete packets. Packets share link capacity dynamically (statistical multiplexing) and buffer in queues at intermediate switches, introducing latency and packet drops if links saturate.",
+                            "Datagram Networks": "No pre-established path. Routers look up destination address in forwarding tables to determine next hop for each individual packet."
+                        },
+                        diagram: "switching",
+                        video: "https://www.youtube.com/embed/f9eIpNiaWdE"
                     },
-                    "pdu": {
-                        title: "PDU (Power Distribution Unit)",
-                        summary: "Devices used to distribute power to computers and networking equipment within a rack.",
-                        concepts: [
-                            { title: "Intelligent PDU", text: "Provides remote outlet switching and real-time power monitoring." },
-                            { title: "Phase Balance", text: "Ensuring load is distributed equally across 3-phase power feeds." }
-                        ],
-                        related: ["UPS", "ATS"]
-                    }
-                }
-            },
-            "cabling-connectivity": {
-                title: "Cabling & Connectivity",
-                topics: {
                     "fiber-optics": {
-                        title: "Fiber Optic Connectivity",
-                        summary: "Using light signals through glass strands to transmit data at extremely high speeds over long distances.",
-                        image: "./assets/fiber.png",
-                        diagram: "fiber",
-                        concepts: [
-                            { title: "SMF (Single-Mode)", text: "Long-range (kilometers). OS2 is the current standard." },
-                            { title: "MMF (Multi-Mode)", text: "Short-range (meters). OM4/OM5 used for 100G+ intra-room." }
-                        ],
-                        specs: [
-                            ["Standard", "Core Dia", "Bandwidth", "Max Reach"],
-                            ["OS2", "9µm", "100Gb/s+", "40km"],
-                            ["OM4", "50µm", "40Gb/s", "400m"],
-                            ["OM5", "50µm", "Wideband", "400m"]
-                        ],
-                        related: ["Connectors", "SFP", "QSFP"]
-                    },
-                    "connectors": {
-                        title: "Connector Types",
-                        summary: "Standardized physical interfaces for fiber and copper cables.",
-                        concepts: [
-                            { title: "LC (Lucent Connector)", text: "Small form factor, standard for high-density fiber patching." },
-                            { title: "MTP/MPO", text: "Multi-fiber Push On. Used for 40G/100G/400G trunking (12-24 fibers)." }
-                        ],
-                        related: ["Fiber Optics", "Transceivers"]
+                        title: "Fiber Optic Cables",
+                        kidTitle: "🔦 Glass Straw Flashlight Magic",
+                        summary: "Fiber optics send digital data as super-fast pulses of light bouncing inside thin hair-like glass fibers.",
+                        kidStory: "Imagine you have a long, bendy straw made of pure, shiny glass. You shine a flashlight into one end. The light bounces off the glass walls—ping, ping, ping!—and shoots out the other end almost instantly. Because light is the fastest thing in the universe, using light pulses lets us send files across the world in milliseconds! These fibers are as thin as your hair, but they connect whole continents underneath the oceans!",
+                        grownupSpecs: {
+                            "Core Physics": "Total Internal Reflection. Light propagates through a glass core surrounded by a cladding with a lower refractive index.",
+                            "Single-Mode Fiber (SMF)": "Extremely thin core (~9 microns). Uses LASER as light source. Single ray path eliminates modal dispersion, allowing ranges of 10-100 km.",
+                            "Multi-Mode Fiber (MMF)": "Thicker core (~50 microns). Uses LED as light source. Light travels in multiple ray paths, causing modal dispersion. Ideal for short ranges (<500m) in datacenters.",
+                            "Standards": "OS2 (Single-mode), OM3/OM4/OM5 (Laser-optimized Multimode supporting 10G to 400G)."
+                        },
+                        diagram: "fiberoptics",
+                        video: "https://www.youtube.com/embed/0MwMkBET_5I"
                     }
                 }
             },
-            "power-cooling": {
-                title: "Power & Cooling",
+            "rules": {
+                title: "Playground Rules",
                 topics: {
-                    "aisle-containment": {
-                        title: "Aisle Containment Systems",
-                        summary: "Separating hot exhaust air from cold supply air to maximize cooling efficiency.",
-                        diagram: "cooling",
-                        concepts: [
-                            { title: "CAC", text: "Cold Aisle Containment. Efficiently delivers air to server intakes." },
-                            { title: "HAC", text: "Hot Aisle Containment. Directly extracts hot air to CRACs." }
-                        ],
-                        proTip: "Raising supply temps by just 1 degree can save 2-3% in energy costs."
+                    "tcp-udp": {
+                        title: "TCP vs UDP",
+                        kidTitle: "📞 The Safe Phone Call vs 🎈 The Balloon Toss",
+                        summary: "TCP is a reliable, orderly communicator, whereas UDP is a fast, throw-and-forget transmission stream.",
+                        kidStory: "Computers use two different rules to send packets:\n\n**TCP (The Polite Phone Call)** 📞: You call your friend and say: 'Hey, are you ready? Yes! Okay, sending packet 1. Did you get it? Yes! Okay, sending packet 2.' If they miss a packet, you send it again. This is super safe for letters, documents, and shopping pages.\n\n**UDP (The Water Balloon Toss)** 🎈: You just throw 10 water balloons at your friend as fast as you can. You don't check if they caught them. If one balloon pops, oh well! You keep throwing. This is perfect for video games and live streams where speed is crucial, and a tiny glitch is better than the video freezing!",
+                        grownupSpecs: {
+                            "TCP (Transmission Control Protocol)": "Connection-oriented, full-duplex byte stream. Guarantees Reliable Data Transfer (RDT) using sequence numbers, ACKs, timeout retransmissions, sliding windows for flow control, and AIMD (Additive Increase Multiplicative Decrease) for congestion control.",
+                            "UDP (User Datagram Protocol)": "Connectionless, best-effort transport. Minimum overhead (8-byte header vs TCP's 20-byte). No connection setup latency, no congestion control. Suitable for real-time applications where packets are delay-sensitive rather than loss-sensitive.",
+                            "UDP Header Fields": "Source Port (16 bit), Destination Port (16 bit), Length (16 bit), Checksum (16 bit)."
+                        },
+                        diagram: "tcpudp",
+                        video: "https://www.youtube.com/embed/Vdc8Td30EsY"
                     },
-                    "pue": {
-                        title: "PUE (Power Usage Effectiveness)",
-                        summary: "The industry standard metric for measuring data center energy efficiency.",
-                        concepts: [
-                            { title: "Benchmark", text: "Ideal is 1.0. Modern hyperscale DCs achieve 1.1-1.2." },
-                            { title: "Components", text: "Includes power used by cooling, lighting, and UPS losses." }
-                        ]
+                    "csma-cd": {
+                        title: "CSMA/CD (Talking in Turn)",
+                        kidTitle: "📣 Loud Megaphone Party Rules",
+                        summary: "CSMA/CD is a rule for shared cables: listen before talking, detect overlaps (collisions), and back off randomly to retry.",
+                        kidStory: "Imagine a big playground where 10 kids are holding walkie-talkies connected to one megaphone. If everyone talks at once, it just makes a giant screeching noise (a Collision!) and no one gets heard. So we use a rule:\n\n1. **Listen First**: Before you speak, check if the megaphone is quiet.\n2. **Speak & Listen**: If it's quiet, start talking. But keep listening!\n3. **Oops, Collision!**: If someone else started at the exact same moment, you'll hear the overlap. Immediately stop talking and send a loud warning sound!\n4. **Roll a Die**: Wait a random number of seconds before trying to speak again. Since the wait is random, you won't bump into each other again!",
+                        grownupSpecs: {
+                            "Protocol Mechanism": "Carrier Sense Multiple Access with Collision Detection (CSMA/CD). Used in half-duplex Ethernet (IEEE 802.3).",
+                            "Collision Handling": "If a collision is detected during transmission, the node aborts, broadcasts a 32-bit Jam Signal to alert all nodes, and enters Exponential Backoff: waiting r * SlotTime, where r is a random integer chosen in [0, 2^k - 1] (k is the collision count, capped at 10).",
+                            "Medium Access Comparison": "Replaced in modern switching by microsegmentation and full-duplex links where collisions are physically impossible."
+                        },
+                        video: "https://www.youtube.com/embed/Dxcc6yJwRks"
+                    },
+                    "token-ring": {
+                        title: "Token Ring Network",
+                        kidTitle: "🪄 Passing the Magic Talking Stick",
+                        summary: "Token Ring passes a tiny digital ticket around a ring of nodes, guaranteeing that only the ticket-holder can transmit.",
+                        kidStory: "Imagine a circle of computers sitting in a ring. Instead of everyone shouting at once, they pass around a glowing magic stick called the **Token**.\n\nIf you have a message to send, you wait for the magic stick to arrive. When you catch it, you hold onto it, write your message on a paper packet, and send it around the circle to the destination. Once the message is received, you pass the magic stick back to the next computer in the circle. Because there is only one magic stick, there are zero crashes and no shouting!",
+                        grownupSpecs: {
+                            "Architecture": "IEEE 802.5 Standard. Star-wired ring topology. A special 3-byte frame (Token) circulates continuously.",
+                            "Data Transfer": "To transmit, a node captures the token by altering a bit (changing it to a start-of-frame sequence), appends its data, and transmits. The frame travels around the ring, is copied by the destination, and returns to the source which removes it and releases a new token.",
+                            "FDDI Variant": "Fiber Distributed Data Interface. Dual-ring topology running at 100 Mbps. Wraps primary ring data onto the secondary ring in opposite direction if a link cuts, providing self-healing fault tolerance."
+                        },
+                        diagram: "tokenring",
+                        video: "https://www.youtube.com/embed/VnS_g9P1tH4"
                     }
                 }
             },
-            "monitoring-tools": {
-                title: "Monitoring & Tools",
+            "routing": {
+                title: "Traffic Control",
                 topics: {
-                    "snmp": {
-                        title: "SNMP (Simple Network Management Protocol)",
-                        summary: "The standard protocol for collecting and organizing information about managed devices on IP networks.",
-                        concepts: [
-                            { title: "OIDs", text: "Object Identifiers used to point to specific metrics (e.g., Temp, CPU)." },
-                            { title: "Traps", text: "Alert messages sent by the device to the NMS when a threshold is met." }
+                    "ip-nat": {
+                        title: "IP Addresses & NAT",
+                        kidTitle: "🏨 The Mailbox and Hotel Receptionist",
+                        summary: "IP addresses identify computers, while NAT acts like a hotel receptionist translating private addresses to a single public address.",
+                        kidStory: "Every computer connected to the internet gets a special number called an **IP Address** (like `192.168.1.1`), which is like its house address. But the world is running out of these numbers!\n\nTo save space, we use **NAT (Network Address Translation)**. NAT is like a hotel lobby receptionist. The hotel rooms have private room numbers (e.g., room 101, room 102). When guests write letters to the outside world, the receptionist stamps the hotel's single main public street address on all of them. When letters come back to the hotel, the receptionist looks at the room number and delivers them to the right guests. This lets thousands of computers share just one main IP address!",
+                        grownupSpecs: {
+                            "IPv4 Addressing": "32-bit addresses divided into NetID and HostID. Written in dotted-decimal format (e.g., 192.168.10.5).",
+                            "Private IP Ranges": "Class A: 10.0.0.0/8, Class B: 172.16.0.0/12, Class C: 192.168.0.0/16. These are non-routable on the public Internet.",
+                            "Network Address Translation (NAT)": "Maps local private IPs to a public IP. Port Address Translation (PAT / NAT Overloading) maps multiple hosts by tracking TCP/UDP source port allocations in a translation table."
+                        },
+                        techSpecsTable: [
+                            ["Protocol", "Inside Local IP & Port", "Inside Global IP & Port", "Outside Host Address"],
+                            ["TCP", "192.168.1.10:1725", "170.168.2.2:1492", "64.233.190.99:80"],
+                            ["TCP", "192.168.1.11:1725", "170.168.2.2:1725", "64.233.190.99:80"],
+                            ["UDP", "192.168.1.50:5060", "170.168.2.2:5060", "12.34.56.78:5060"]
                         ],
-                        related: ["Syslog", "NetFlow"]
+                        video: "https://www.youtube.com/embed/5o8CwafCxnU"
                     },
-                    "cli-tools": {
-                        title: "Troubleshooting Tools",
-                        summary: "Essential CLI utilities for any DC technician on the floor.",
-                        concepts: [
-                            { title: "iperf", text: "Measures actual throughput between two points." },
-                            { title: "mtr", text: "Combined ping and traceroute for real-time path analysis." }
-                        ]
+                    "leaky-bucket": {
+                        title: "Leaky Bucket (Steady Traffic)",
+                        kidTitle: "🪣 The Steady Drip Water Cup",
+                        summary: "The Leaky Bucket algorithm smooths bursty data traffic into a constant, steady output rate to prevent system overload.",
+                        kidStory: "Imagine you have a paper cup with a small pinhole at the bottom. If you pour a whole cup of water in all at once (a big burst of internet packets), the cup holds the water, and drops fall out of the bottom hole one by one, slow, steady, and clean. This is called traffic smoothing!\n\nBut watch out: if you pour water in way too fast, the cup will fill up to the brim, and extra water will spill over the edges and get lost. In computers, this is called dropping packets! It tells the sender to slow down.",
+                        grownupSpecs: {
+                            "Algorithm Purpose": "Traffic shaping/policing at network boundaries. Converts bursty input streams into a constant-rate, regulated output stream.",
+                            "Leaky Bucket vs Token Bucket": "Leaky Bucket outputs at a strict constant rate regardless of burstiness. Token Bucket accumulates 'tokens' in a bucket over time, allowing bursts of data to transmit instantly when tokens are available, providing better support for dynamic network applications.",
+                            "Parameters": "Bucket size (b) representing queue buffer capacity, and output leak rate (r) representing allocated bandwidth."
+                        },
+                        diagram: "leakybucket",
+                        video: "https://www.youtube.com/embed/HEEnLZV2wGI"
                     }
                 }
             },
             "glossary": {
-                title: "Glossary (50+ Technical Terms)",
+                title: "Glossary Index",
                 isGlossary: true,
                 terms: {
-                    "ARP": "Address Resolution Protocol: Resolves IP addresses to physical MAC addresses.",
-                    "ATS": "Automatic Transfer Switch: Switches power source between A and B feeds automatically upon failure.",
-                    "BGP": "Border Gateway Protocol: The routing protocol of the internet using paths and policies.",
-                    "CDP": "Cisco Discovery Protocol: Proprietary L2 protocol to share info between Cisco devices.",
-                    "CIDR": "Classless Inter-Domain Routing: Method for flexible IP address allocation.",
-                    "CLI": "Command Line Interface: Text-based interface for configuring devices.",
-                    "CRAC": "Computer Room Air Conditioner: Maintains temperature, air distribution and humidity.",
-                    "DAC": "Direct Attach Copper: Passive twinax cable with integrated transceivers.",
-                    "DCBX": "Data Center Bridging Exchange: L2 protocol for exchanging capabilities between devices.",
-                    "DCIM": "Data Center Infrastructure Management: Software to monitor power, cooling, and assets.",
-                    "DHCP": "Dynamic Host Configuration Protocol: Automatically assigns IP addresses to devices.",
-                    "DNS": "Domain Name System: Translates human-readable names to IP addresses.",
-                    "FCoE": "Fibre Channel over Ethernet: Encapsulates Fibre Channel frames over Ethernet networks.",
-                    "HSRP": "Hot Standby Router Protocol: Provides gateway redundancy for IP networks.",
-                    "ICMP": "Internet Control Message Protocol: Used for diagnostics (ping).",
-                    "IP": "Internet Protocol: Network layer protocol for addressing and routing.",
-                    "iSCSI": "Internet Small Computer Systems Interface: IP-based storage standard.",
-                    "KVM": "Keyboard, Video, Mouse: Access multiple servers from one console.",
-                    "LACP": "Link Aggregation Control Protocol: Bundles physical links into one logical link.",
-                    "LLDP": "Link Layer Discovery Protocol: Vendor-neutral neighbor discovery protocol.",
-                    "MAC": "Media Access Control: Unique hardware identifier for interfaces.",
-                    "MMF": "Multi-Mode Fiber: Used for short distance networking.",
-                    "MTP": "Multi-fiber Termination Push-on: High performance connector.",
-                    "MTU": "Maximum Transmission Unit: Largest packet size (standard 1500).",
-                    "N+1": "Redundancy: System has one extra component.",
-                    "NETFLOW": "Standard for collecting IP network traffic info.",
-                    "NIC": "Network Interface Card: Connection hardware.",
-                    "OSPF": "Open Shortest Path First: Link-state protocol.",
-                    "PDU": "Power Distribution Unit: Rack-mounted power strip.",
-                    "PUE": "Power Usage Effectiveness: Facility Power / IT Power.",
-                    "QSFP": "Quad Small Form-factor Pluggable: 4-lane transceiver.",
-                    "RJ45": "Registered Jack 45: 8-pin copper connector.",
-                    "SAN": "Storage Area Network: Dedicated storage network.",
-                    "SFP": "Small Form-factor Pluggable: Compact transceiver.",
-                    "SMF": "Single-Mode Fiber: Long distance laser fiber.",
-                    "SNMP": "Simple Network Management Protocol: Device management protocol.",
-                    "STP": "Spanning Tree Protocol: Prevents network loops.",
-                    "SYSLOG": "Standard for message logging.",
-                    "TCP": "Transmission Control Protocol: Reliable transport.",
-                    "UPS": "Uninterruptible Power Supply: Battery backup.",
-                    "VLAN": "Virtual Local Area Network: Logical network partition."
+                    "IP Address": "The digital street address of a computer (e.g. 192.168.1.1).",
+                    "Packet": "A small puzzle-piece chunk of a file sent over the network.",
+                    "Router": "A smart post-office director that guides packets to their correct address.",
+                    "Switch": "A localized postman that forwards envelopes directly to the correct computer in the room.",
+                    "Protocol": "A polite set of rules that computers agree to use when speaking.",
+                    "Encapsulation": "Wrapping a message inside envelopes of headers to travel through network layers.",
+                    "Collision": "When two computers speak at the exact same time on the same line, causing a scramble."
                 }
             }
         };
 
+        // Initialize state variables
         let userContent = JSON.parse(localStorage.getItem('dc_user_content') || '[]');
+        let currentCategory = 'fundamentals';
+        let currentTopic = 'osi-model';
+        let activeAnimations = {};
 
+        // Run on load
         function init() {
             renderSidebar();
             setupEventListeners();
+            startSessionUptime();
+            renderContent();
         }
 
-        function renderSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.innerHTML = '';
+        // Keep track of the playground active session time
+        function startSessionUptime() {
+            let seconds = 0;
+            const el = document.getElementById('searchResults'); // We will just insert uptime indicator in top-nav
+            const uptimeContainer = document.createElement('div');
+            uptimeContainer.style.fontSize = "0.75rem";
+            uptimeContainer.style.color = "var(--text-dim)";
+            uptimeContainer.style.fontFamily = "var(--font-mono)";
+            uptimeContainer.id = "session-uptime";
+            uptimeContainer.innerText = "PLAYGROUND UPTIME: 00:00";
+            document.querySelector('.top-nav').appendChild(uptimeContainer);
 
+            setInterval(() => {
+                seconds++;
+                const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const s = (seconds % 60).toString().padStart(2, '0');
+                uptimeContainer.innerText = `PLAYGROUND UPTIME: ${m}:${s}`;
+            }, 1000);
+        }
+
+        // Render Sidebar Navigation
+        function renderSidebar() {
+            const container = document.getElementById('sidebar-container');
+            container.innerHTML = '';
+
+            // Render core content categories
             for (const [catId, category] of Object.entries(TECH_CONTENT)) {
                 const catEl = document.createElement('div');
-                catEl.className = 'nav-category';
+                catEl.className = `nav-category ${catId === currentCategory ? 'active' : ''}`;
                 catEl.id = `cat-${catId}`;
 
                 let topicsHTML = '';
                 if (category.topics) {
                     for (const [topicId, topic] of Object.entries(category.topics)) {
-                        topicsHTML += `<div class="nav-topic-link" data-path="${catId}/${topicId}">${topic.title}</div>`;
+                        const activeClass = (catId === currentCategory && topicId === currentTopic) ? 'active' : '';
+                        topicsHTML += `<div class="nav-topic-link ${activeClass}" data-cat="${catId}" data-topic="${topicId}">${topic.title}</div>`;
                     }
                 } else if (category.isGlossary) {
-                    topicsHTML += `<div class="nav-topic-link" data-path="${catId}/main">Full Glossary</div>`;
+                    const activeClass = (catId === currentCategory) ? 'active' : '';
+                    topicsHTML += `<div class="nav-topic-link ${activeClass}" data-cat="${catId}" data-topic="main">Full Glossary</div>`;
                 }
 
-                // Append user content for this category
-                const catUserContent = userContent.filter(c => c.category === catId);
-                catUserContent.forEach((uc, index) => {
-                    topicsHTML += `<div class="nav-topic-link" data-user="true" data-index="${index}">${uc.name} <span style="font-size: 10px; color: var(--amber)">*</span></div>`;
+                // Append any custom injected user content under their categories
+                const userTopics = userContent.filter(t => t.category === catId);
+                userTopics.forEach((ut, index) => {
+                    const topicIndexId = `user-${index}`;
+                    const activeClass = (currentTopic === topicIndexId) ? 'active' : '';
+                    topicsHTML += `<div class="nav-topic-link ${activeClass}" data-user="true" data-index="${index}" data-cat="${catId}">${ut.title} ⭐️</div>`;
                 });
 
                 catEl.innerHTML = `
                     <div class="nav-category-header" onclick="toggleCategory('${catId}')">
                         ${category.title}
-                        <span>+</span>
+                        <span>${catId === currentCategory ? '−' : '+'}</span>
                     </div>
-                    <div class="nav-topics">${topicsHTML}</div>
+                    <div class="nav-topics" style="display: ${catId === currentCategory ? 'block' : 'none'};">${topicsHTML}</div>
                 `;
-                sidebar.appendChild(catEl);
+                container.appendChild(catEl);
             }
         }
 
-        function toggleCategory(catId) {
-            const el = document.getElementById(`cat-${catId}`);
-            el.classList.toggle('active');
-            const icon = el.querySelector('span');
-            icon.textContent = el.classList.contains('active') ? '-' : '+';
-        }
-
-        function setupEventListeners() {
-            // Navigation clicks
-            document.addEventListener('click', (e) => {
-                if (e.target.classList.contains('nav-topic-link')) {
-                    const path = e.target.getAttribute('data-path');
-                    const isUser = e.target.getAttribute('data-user') === 'true';
-                    
-                    document.querySelectorAll('.nav-topic-link').forEach(l => l.classList.remove('active'));
-                    e.target.classList.add('active');
-
-                    if (isUser) {
-                        const index = e.target.getAttribute('data-index');
-                        renderUserTopic(userContent[index]);
-                    } else if (path) {
-                        const [catId, topicId] = path.split('/');
-                        renderTopic(catId, topicId);
-                    }
+        window.toggleCategory = (catId) => {
+            const categories = document.querySelectorAll('.nav-category');
+            categories.forEach(cat => {
+                if (cat.id === `cat-${catId}`) {
+                    const isActive = cat.classList.toggle('active');
+                    const topicsDiv = cat.querySelector('.nav-topics');
+                    topicsDiv.style.display = isActive ? 'block' : 'none';
+                    cat.querySelector('.nav-category-header span').innerText = isActive ? '−' : '+';
                 }
             });
+        };
 
-            // Search functionality
-            const searchInput = document.getElementById('globalSearch');
-            const searchResults = document.getElementById('searchResults');
+        // Render main content area based on current selection and Mode (Kid vs Grownup)
+        function renderContent() {
+            // Stop any running animation loop
+            cancelAllAnimations();
 
-            searchInput.oninput = (e) => {
-                const query = e.target.value.toLowerCase();
-                if (!query) {
-                    searchResults.innerHTML = '';
-                    searchResults.style.display = 'none';
-                    return;
-                }
-
-                let matches = [];
-                for (const [catId, category] of Object.entries(TECH_CONTENT)) {
-                    if (category.topics) {
-                        for (const [topicId, topic] of Object.entries(category.topics)) {
-                            if (topic.title.toLowerCase().includes(query) || topic.summary.toLowerCase().includes(query)) {
-                                matches.push({ title: topic.title, cat: category.title, path: `${catId}/${topicId}` });
-                            }
-                        }
-                    }
-                    if (category.isGlossary) {
-                        for (const [term, def] of Object.entries(category.terms)) {
-                            if (term.toLowerCase().includes(query) || def.toLowerCase().includes(query)) {
-                                matches.push({ title: `Term: ${term}`, cat: "Glossary", path: "glossary/main" });
-                            }
-                        }
-                    }
-                }
-                userContent.forEach((uc, index) => {
-                    if (uc.name.toLowerCase().includes(query)) {
-                        matches.push({ title: uc.name, cat: "User Content", userIndex: index });
-                    }
-                });
-
-                if (matches.length > 0) {
-                    searchResults.innerHTML = matches.slice(0, 10).map(m => `
-                        <div class="search-result-item" onclick="${m.userIndex !== undefined ? `viewUser(${m.userIndex})` : `viewTopic('${m.path}')`}">
-                            <div style="font-family: var(--font-mono); color: var(--cyan)">${m.title}</div>
-                            <div style="font-size: 0.7rem; color: var(--text-dim)">${m.cat}</div>
-                        </div>
-                    `).join('');
-                    searchResults.style.display = 'block';
-                } else {
-                    searchResults.innerHTML = '<div style="padding: 10px; color: var(--text-dim)">No matches found in database.</div>';
-                    searchResults.style.display = 'block';
-                }
-            };
-
-            // Floating Button & Drawer
-            document.getElementById('addBtn').onclick = () => {
-                document.getElementById('drawer').classList.add('open');
-                document.getElementById('drawerOverlay').style.display = 'block';
-            };
-
-            document.getElementById('drawerOverlay').onclick = () => {
-                document.getElementById('drawer').classList.remove('open');
-                document.getElementById('drawerOverlay').style.display = 'none';
-            };
-
-            // Save User Content
-            document.getElementById('saveBtn').onclick = () => {
-                const name = document.getElementById('newName').value;
-                const category = document.getElementById('newCat').value;
-                const notes = document.getElementById('newNotes').value;
-                const video = document.getElementById('newVideo').value;
-
-                if (!name) { alert("Topic name required."); return; }
-
-                const newItem = { name, category, notes, video, timestamp: Date.now() };
-                userContent.push(newItem);
-                localStorage.setItem('dc_user_content', JSON.stringify(userContent));
-
-                document.getElementById('drawer').classList.remove('open');
-                document.getElementById('drawerOverlay').style.display = 'none';
-                
-                document.getElementById('newName').value = '';
-                document.getElementById('newNotes').value = '';
-                document.getElementById('newVideo').value = '';
-
-                renderSidebar();
-                renderUserTopic(newItem);
-            };
-        }
-
-        function viewTopic(path) {
-            const [catId, topicId] = path.split('/');
-            renderTopic(catId, topicId);
-            document.getElementById('searchResults').style.display = 'none';
-            document.getElementById('globalSearch').value = '';
-        }
-        function showToast(message) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function renderTopic(catId, topicId) {
+            const isKidMode = document.getElementById('modeToggle').checked;
             const contentArea = document.getElementById('contentArea');
-            const category = TECH_CONTENT[catId];
-            
-            if (category.isGlossary) {
+
+            // Apply theme switch styling to body
+            if (isKidMode) {
+                document.body.classList.add('kid-mode');
+                document.getElementById('label-kid').classList.add('active');
+                document.getElementById('label-grownup').classList.remove('active');
+            } else {
+                document.body.classList.remove('kid-mode');
+                document.getElementById('label-kid').classList.remove('active');
+                document.getElementById('label-grownup').classList.add('active');
+            }
+
+            // Handle Custom Injected user topics
+            if (currentTopic.startsWith('user-')) {
+                const index = parseInt(currentTopic.split('-')[1]);
+                const data = userContent[index];
+                if (!data) return;
+                renderUserModule(data, isKidMode);
+                return;
+            }
+
+            // Handle Glossary
+            if (currentCategory === 'glossary') {
                 renderGlossary();
                 return;
             }
 
-            const topic = category.topics[topicId];
-            const isUserGenerated = topic.isUserAdded;
-            
-            let html = `
-                <div class="content-container">
-                    <div class="topic-header">
-                        <span class="category-badge">${category.title}</span>
-                        <h1>${topic.title} ${isUserGenerated ? '<span class="user-badge">USER ADDED</span>' : ''}</h1>
-                        <p class="summary">${topic.summary}</p>
+            const category = TECH_CONTENT[currentCategory];
+            const topic = category.topics[currentTopic];
+            if (!topic) return;
+
+            let html = `<div class="content-container">`;
+
+            // Badge & Headers
+            html += `
+                <div class="topic-header">
+                    <span class="category-badge">${category.title}</span>
+                    <h1 id="main-title">${isKidMode ? (topic.kidTitle || topic.title) : topic.title}</h1>
+                    <p class="topic-summary">${topic.summary}</p>
+                </div>
+            `;
+
+            // Mode Content Swap
+            if (isKidMode) {
+                html += `
+                    <div class="analogy-card" id="kid-explanation">
+                        <h3>💡 The Kid Analogy Story</h3>
+                        <p>${topic.kidStory.replace(/\n/g, '<br><br>')}</p>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="specs-grid" id="grownup-explanation">
+                        <div class="spec-card">
+                            <h3>⚙️ Technical Architecture</h3>
+                            <div style="font-size: 0.95rem; line-height: 1.6;">
+                                ${Object.entries(topic.grownupSpecs).map(([key, val]) => `<strong>${key}</strong>: ${val}<br><br>`).join('')}
+                            </div>
+                        </div>
                         
-                        ${topic.tags ? `
-                            <div style="margin-top: 10px">
-                                ${topic.tags.map(tag => `<span class="tag-chip" onclick="executeSearch('${tag}')">#${tag}</span>`).join('')}
+                        ${topic.techSpecsTable ? `
+                            <div class="spec-card">
+                                <h3>📊 Specification Details</h3>
+                                <table class="tech-table">
+                                    <thead>
+                                        <tr>
+                                            ${topic.techSpecsTable[0].map(th => `<th>${th}</th>`).join('')}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${topic.techSpecsTable.slice(1).map(row => `
+                                            <tr>
+                                                ${row.map(td => `<td>${td}</td>`).join('')}
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
                             </div>
                         ` : ''}
                     </div>
+                `;
+            }
 
-                    ${topic.image ? `
-                        <div style="margin-bottom: 32px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border)">
-                            <img src="${topic.image}" alt="${topic.title}" style="width: 100%; height: 350px; object-fit: cover; filter: brightness(0.9) contrast(1.1)">
-                        </div>
-                    ` : ''}
-
-                    ${topic.concepts ? `
-                        <div class="card-grid">
-                            ${topic.concepts.map(c => `
-                                <div class="card">
-                                    <h3>${c.title}</h3>
-                                    <p>${c.text}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-
-                    ${topic.diagram ? `
-                        <div style="margin-top: 40px" class="highlight-box">
-                            <h3 style="font-family: var(--font-mono); margin-bottom: 16px; color: var(--text-dim); font-size: 0.8rem">SYSTEM ANALYTICAL DIAGRAM</h3>
-                            <div class="diagram-area" id="diagram-${topic.diagram}"></div>
-                        </div>
-                    ` : ''}
-
-                    ${topic.pdf ? `
-                        <div style="margin-top: 40px">
-                            <h3 style="font-family: var(--font-mono); margin-bottom: 16px; color: var(--text-dim); font-size: 0.8rem">ATTACHED TECHNICAL DOCUMENTATION</h3>
-                            <iframe src="${topic.pdf}" style="width:100%; height:500px; border: 1px solid var(--border); border-radius: 8px"></iframe>
-                        </div>
-                    ` : ''}
-
-                    ${topic.specs ? `
-                        <div style="margin-top: 40px">
-                            <h3 style="font-family: var(--font-mono); margin-bottom: 16px; color: var(--text-dim); font-size: 0.8rem">TECHNICAL SPECIFICATIONS & USE CASES</h3>
-                            <table style="width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.9rem">
-                                ${topic.specs.map((row, i) => `
-                                    <tr style="${i === 0 ? 'background: var(--bg-card); color: var(--cyan)' : 'border-bottom: 1px solid var(--border)'}">
-                                        ${row.map(cell => `<td style="padding: 12px">${cell}</td>`).join('')}
-                                    </tr>
-                                `).join('')}
-                            </table>
-                        </div>
-                    ` : ''}
-
-                    ${topic.video ? `
-                        <div style="margin-top: 40px">
-                            <h3 style="font-family: var(--font-mono); margin-bottom: 16px; color: var(--text-dim); font-size: 0.8rem">TECHNICAL VIDEO REFERENCE</h3>
-                            <div class="video-container">
-                                <iframe width="560" height="315" src="${topic.video}" frameborder="0" allowfullscreen></iframe>
+            // Animation Canvas Area
+            if (topic.diagram) {
+                html += `
+                    <div class="diagram-outer">
+                        <div class="diagram-header">
+                            <h4>🎮 INTERACTIVE DIGITAL PLAYGROUND</h4>
+                            <div class="diagram-controls" id="canvas-controllers">
+                                <!-- Dynamic JS controls get loaded here -->
                             </div>
                         </div>
-                    ` : ''}
-
-                    ${topic.related ? `
-                        <div style="margin-top: 40px">
-                            <h4 style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); margin-bottom: 12px">RELATED CONCEPTS</h4>
-                            <div>
-                                ${topic.related.map(r => `<span class="tag-chip" onclick="executeSearch('${r}')">${r}</span>`).join('')}
-                            </div>
+                        <div class="diagram-canvas" id="canvas-container">
+                            <!-- Injected SVG/Canvas -->
                         </div>
-                    ` : ''}
+                    </div>
+                `;
+            }
 
-                    ${topic.proTip ? `
-                        <div style="margin-top: 40px; padding: 24px; border-left: 4px solid var(--amber); background: rgba(245, 158, 11, 0.05); border-radius: 0 8px 8px 0">
-                            <h4 style="color: var(--amber); font-family: var(--font-mono); margin-bottom: 8px; letter-spacing: 1px">FIELD ENGINEER PRO-TIP</h4>
-                            <p>${topic.proTip}</p>
+            // Youtube Embed section
+            if (topic.video) {
+                html += `
+                    <div class="video-section">
+                        <h3>🎬 Watch and Learn (Video)</h3>
+                        <div class="video-wrapper">
+                            <iframe id="youtube-frame" src="${topic.video}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         </div>
-                    ` : ''}
-                </div>
-            `;
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
             contentArea.innerHTML = html;
-            window.scrollTo(0,0);
-            
-            if (topic.diagram) renderDiagram(topic.diagram);
+
+            // Initialize Diagram
+            if (topic.diagram) {
+                initDiagram(topic.diagram);
+            }
         }
 
-        window.executeSearch = (term) => {
-            const searchInput = document.getElementById('globalSearch');
-            searchInput.value = term;
-            searchInput.dispatchEvent(new Event('input'));
-            if (window.innerWidth <= 900) {
-                document.querySelector('aside').classList.remove('mobile-open');
-            }
-        };
+        // Render standard User Contributed Module
+        function renderUserModule(data, isKidMode) {
+            const contentArea = document.getElementById('contentArea');
+            let html = `
+                <div class="content-container">
+                    <div class="topic-header">
+                        <span class="category-badge">User Injected Module</span>
+                        <h1>${data.title}</h1>
+                        <p class="topic-summary">Custom contribution loaded into Local Sandbox storage.</p>
+                    </div>
 
-        function renderDiagram(type) {
-            const container = document.getElementById(`diagram-${type}`);
-            if (!container) return;
+                    <div class="analogy-card">
+                        <h3>${isKidMode ? '👶 Kid Analogy' : '💻 Technical Details'}</h3>
+                        <p style="white-space: pre-wrap;">${isKidMode ? (data.story || data.notes) : data.notes}</p>
+                    </div>
+            `;
 
-            let svg = '';
-            if (type === 'osi') {
-                svg = `
-                    <svg viewBox="0 0 800 450" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid var(--border); padding: 20px">
-                        <defs>
-                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                                <polygon points="0 0, 10 3.5, 0 7" fill="var(--cyan)" />
-                            </marker>
-                        </defs>
-                        <g font-family="JetBrains Mono" font-size="12">
-                            <text x="600" y="30" fill="var(--cyan)" font-weight="700">DATA FLOW DIRECTION</text>
-                            <line x1="650" y1="50" x2="650" y2="400" stroke="var(--cyan)" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5" />
-                            ${[7,6,5,4,3,2,1].map((l, i) => {
-                                const names = ["Application", "Presentation", "Session", "Transport", "Network", "Data Link", "Physical"];
-                                const examples = ["HTTP, DNS, FTP", "SSL, SSH, JPEG", "NetBIOS, RPC", "TCP, UDP", "IP, ICMP, IPsec", "Ethernet, MAC", "Cables, Bits, Hubs"];
-                                const encapsulation = ["Data", "Data", "Data", "Segment", "Packet", "Frame", "Bits"];
-                                const colors = i === 3 ? "#f59e0b" : "#00d4ff";
-                                return `
-                                    <g transform="translate(0, ${i*55})">
-                                        <rect x="50" y="20" width="350" height="40" fill="${colors}" fill-opacity="0.1" stroke="${colors}" stroke-width="2" />
-                                        <text x="70" y="45" fill="white" font-size="14">L${l}: ${names[i]}</text>
-                                        <rect x="410" y="20" width="100" height="40" fill="var(--bg-card)" stroke="var(--border)" />
-                                        <text x="425" y="45" fill="var(--text-dim)">${encapsulation[i]}</text>
-                                        <text x="520" y="45" fill="var(--text-dim)" font-size="10">➞ ${examples[i]}</text>
-                                    </g>
-                                `;
-                            }).join('')}
-                        </g>
-                    </svg>
-                `;
-            } else if (type === 'rack') {
-                svg = `
-                    <svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.3); border-radius: 8px">
-                        <rect x="100" y="20" width="200" height="460" fill="none" stroke="var(--border)" stroke-width="2" />
-                        ${Array.from({length: 42}).map((_, i) => `
-                            <line x1="100" y1="${20 + i*11}" x2="300" y2="${20 + i*11}" stroke="var(--border)" stroke-width="0.3" />
-                            ${i % 5 === 0 ? `<text x="75" y="${28 + i*11}" fill="var(--text-dim)" font-size="8">${42-i}U</text>` : ''}
-                        `).join('')}
-                        <g filter="drop-shadow(0 0 5px var(--cyan-glow))">
-                            <rect x="105" y="380" width="190" height="44" fill="var(--cyan)" fill-opacity="0.1" stroke="var(--cyan)" />
-                            <text x="135" y="405" fill="white" font-size="10">STORAGE NODE A</text>
-                            <rect x="105" y="347" width="190" height="22" fill="var(--amber)" fill-opacity="0.1" stroke="var(--amber)" />
-                            <text x="145" y="362" fill="white" font-size="9">DATABASE SRV</text>
-                        </g>
-                        <text x="120" y="505" fill="var(--text-dim)" font-size="10">EIA-310 STANDARD RACK</text>
-                    </svg>
-                `;
-            } else if (type === 'cooling') {
-                svg = `
-                    <svg viewBox="0 0 600 350" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid var(--border)">
-                        <rect x="100" y="80" width="80" height="180" fill="var(--bg-card)" stroke="var(--border)" fill-opacity="0.8" />
-                        <rect x="260" y="80" width="80" height="180" fill="var(--bg-card)" stroke="var(--border)" fill-opacity="0.8" />
-                        <rect x="420" y="80" width="80" height="180" fill="var(--bg-card)" stroke="var(--border)" fill-opacity="0.8" />
-                        
-                        <g stroke="var(--cyan)" stroke-width="2" fill="none">
-                            <path d="M 220 340 L 220 100" stroke-dasharray="10,5" />
-                            <path d="M 180 150 L 210 150" />
-                            <path d="M 260 150 L 230 150" />
-                        </g>
-                        <text x="180" y="330" fill="var(--cyan)" font-size="10">COLD AISLE INTAKE</text>
-                        
-                        <g stroke="var(--amber)" stroke-width="2" fill="none">
-                            <path d="M 380 340 L 380 100" stroke-dasharray="10,5" opacity="0.3" />
-                            <text x="333" y="125" fill="var(--amber)" font-size="20">♨</text>
-                        </g>
-                        <text x="360" y="60" fill="var(--amber)" font-size="10">HOT AIR RETURNS</text>
-                    </svg>
-                `;
-            } else if (type === 'fiber') {
-                svg = `
-                    <svg viewBox="0 0 640 200" preserveAspectRatio="xMidYMid meet" style="background: rgba(0,0,0,0.3); border-radius: 8px">
-                        <g transform="translate(60, 50)">
-                            <path d="M 0 0 H 60 V 50 H 0 Z" fill="none" stroke="var(--cyan)" stroke-width="2" />
-                            <circle cx="15" cy="20" r="4" fill="var(--cyan)" />
-                            <circle cx="45" cy="20" r="4" fill="var(--cyan)" />
-                            <text x="0" y="75" fill="var(--cyan)" font-size="12">LC DUPLEX</text>
-                        </g>
-                        <g transform="translate(260, 50)">
-                            <path d="M 0 5 H 80 V 45 H 0 Z" fill="none" stroke="var(--amber)" stroke-width="3" />
-                            <rect x="10" y="15" width="60" height="20" fill="var(--amber)" fill-opacity="0.2" />
-                            <text x="-10" y="75" fill="var(--amber)" font-size="12">MTP/MPO</text>
-                        </g>
-                        <g transform="translate(480, 50)">
-                            <path d="M 5 0 H 45 V 50 H 5 V 20 H 0 V 10 H 5 Z" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="2" />
-                            <text x="0" y="75" fill="white" fill-opacity="0.5" font-size="12">RJ45</text>
-                        </g>
-                    </svg>
+            if (data.video) {
+                let videoEmbed = data.video;
+                if (videoEmbed.includes("watch?v=")) {
+                    videoEmbed = videoEmbed.replace("watch?v=", "embed/");
+                }
+                html += `
+                    <div class="video-section">
+                        <h3>🎬 Attached Video Reference</h3>
+                        <div class="video-wrapper">
+                            <iframe src="${videoEmbed}" allowfullscreen></iframe>
+                        </div>
+                    </div>
                 `;
             }
 
-            container.innerHTML = svg;
+            html += `</div>`;
+            contentArea.innerHTML = html;
         }
 
+        // Render complete glossary
         function renderGlossary() {
             const contentArea = document.getElementById('contentArea');
             const sortedTerms = Object.keys(TECH_CONTENT.glossary.terms).sort();
@@ -1126,200 +1325,1149 @@
             let html = `
                 <div class="content-container">
                     <div class="topic-header">
-                        <span class="category-badge">Reference</span>
-                        <h1>Technical Glossary</h1>
-                        <p class="summary">Comprehensive A-Z index of data center networking, infrastructure, and protocol terminology.</p>
+                        <span class="category-badge">Glossary</span>
+                        <h1>📖 Complete Network Dictionary</h1>
+                        <p class="topic-summary">Clear, direct explanations of technical vocabulary terms.</p>
                     </div>
-                    <div class="glossary-grid">
-                        ${sortedTerms.map(term => `
-                            <div class="glossary-item">
-                                <div class="term">${term}</div>
-                                <div class="definition">${TECH_CONTENT.glossary.terms[term]}</div>
+                    
+                    <div class="specs-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+                        ${sortedTerms.map(t => `
+                            <div class="spec-card">
+                                <h3 style="color: var(--accent-sec);">${t}</h3>
+                                <p style="font-size:0.9rem; color:var(--text-main);">${TECH_CONTENT.glossary.terms[t]}</p>
                             </div>
                         `).join('')}
                     </div>
                 </div>
             `;
             contentArea.innerHTML = html;
-            window.scrollTo(0,0);
         }
 
+        // Toggle category display
         function setupEventListeners() {
-            document.querySelectorAll('.cat-name').forEach(header => {
-                header.addEventListener('click', () => {
-                    const parent = header.parentElement;
-                    const isOpen = parent.classList.contains('active');
-                    document.querySelectorAll('.sidebar-category').forEach(c => c.classList.remove('active'));
-                    if (!isOpen) parent.classList.add('active');
-                });
-            });
+            // Watch the Mode toggle
+            document.getElementById('modeToggle').onchange = () => {
+                renderContent();
+            };
 
-            document.querySelectorAll('.topic-link').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    const catId = link.dataset.cat;
-                    const topicId = link.dataset.topic;
-                    renderTopic(catId, topicId);
-                    
-                    document.querySelectorAll('.topic-link').forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
+            // Sidebar Topic Links click event
+            document.addEventListener('click', (e) => {
+                const topicLink = e.target.closest('.nav-topic-link');
+                if (topicLink) {
+                    document.querySelectorAll('.nav-topic-link').forEach(l => l.classList.remove('active'));
+                    topicLink.classList.add('active');
 
-                    if (window.innerWidth <= 900) {
-                        document.querySelector('aside').classList.remove('mobile-open');
+                    currentCategory = topicLink.dataset.cat;
+                    if (topicLink.dataset.user) {
+                        currentTopic = `user-${topicLink.dataset.index}`;
+                    } else {
+                        currentTopic = topicLink.dataset.topic;
                     }
-                });
+
+                    renderSidebar();
+                    renderContent();
+
+                    // Close sidebar on mobile
+                    if (window.innerWidth <= 990) {
+                        document.getElementById('sidebar-nav').classList.remove('mobile-open');
+                    }
+                }
             });
 
-            document.getElementById('menuToggle').addEventListener('click', () => {
-                document.querySelector('aside').classList.toggle('mobile-open');
-            });
+            // Mobile toggle menu
+            document.getElementById('menuToggle').onclick = () => {
+                document.getElementById('sidebar-nav').classList.toggle('mobile-open');
+            };
 
+            // Add Custom Topic Dialog controls
+            document.getElementById('addBtn').onclick = () => {
+                document.getElementById('drawer').classList.add('open');
+                document.getElementById('drawerOverlay').style.display = 'block';
+            };
+            document.getElementById('closeDrawer').onclick = () => {
+                document.getElementById('drawer').classList.remove('open');
+                document.getElementById('drawerOverlay').style.display = 'none';
+            };
+            document.getElementById('drawerOverlay').onclick = () => {
+                document.getElementById('drawer').classList.remove('open');
+                document.getElementById('drawerOverlay').style.display = 'none';
+            };
+
+            // Global search search engine
             const searchInput = document.getElementById('globalSearch');
             const searchResults = document.getElementById('searchResults');
-
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase().trim();
-                if (term.length < 2) {
+            searchInput.oninput = (e) => {
+                const q = e.target.value.toLowerCase().trim();
+                if (q.length < 2) {
                     searchResults.style.display = 'none';
                     return;
                 }
 
                 let matches = [];
-                Object.keys(TECH_CONTENT).forEach(catId => {
-                    const cat = TECH_CONTENT[catId];
+                Object.entries(TECH_CONTENT).forEach(([catId, cat]) => {
                     if (cat.topics) {
-                        Object.keys(cat.topics).forEach(topicId => {
-                            const topic = cat.topics[topicId];
-                            if (topic.title.toLowerCase().includes(term) || topic.summary.toLowerCase().includes(term)) {
-                                matches.push({ title: topic.title, catId, topicId, type: 'Topic' });
-                            }
-                        });
-                    }
-                    if (cat.terms) {
-                        Object.keys(cat.terms).forEach(termKey => {
-                            if (termKey.toLowerCase().includes(term)) {
-                                matches.push({ title: termKey, catId, topicId: 'glossary', type: 'Glossary' });
+                        Object.entries(cat.topics).forEach(([topicId, topic]) => {
+                            if (topic.title.toLowerCase().includes(q) || (topic.kidTitle && topic.kidTitle.toLowerCase().includes(q))) {
+                                matches.push({
+                                    title: topic.title,
+                                    catTitle: cat.title,
+                                    action: () => {
+                                        currentCategory = catId;
+                                        currentTopic = topicId;
+                                        renderSidebar();
+                                        renderContent();
+                                    }
+                                });
                             }
                         });
                     }
                 });
 
                 if (matches.length > 0) {
-                    searchResults.innerHTML = matches.slice(0, 8).map(m => `
-                        <div class="search-result-item" onclick="handleSearchClick('${m.catId}', '${m.topicId}')">
-                            <span style="color: var(--cyan); font-size: 0.7rem; font-family: var(--font-mono)">[${m.type}]</span>
-                            ${m.title}
+                    searchResults.innerHTML = matches.map(m => `
+                        <div class="search-result-item">
+                            <strong>${m.title}</strong> <span style="color:var(--text-dim); font-size:0.75rem;">(${m.catTitle})</span>
                         </div>
                     `).join('');
                     searchResults.style.display = 'block';
+                    searchResults.querySelectorAll('.search-result-item').forEach((item, index) => {
+                        item.onclick = () => {
+                            matches[index].action();
+                            searchResults.style.display = 'none';
+                            searchInput.value = '';
+                        };
+                    });
                 } else {
-                    searchResults.style.display = 'none';
+                    searchResults.innerHTML = `<div class="search-result-item" style="color:var(--text-dim);">No playground matches found</div>`;
+                    searchResults.style.display = 'block';
                 }
-            });
-
-            window.handleSearchClick = (catId, topicId) => {
-                if (topicId === 'glossary') {
-                    renderGlossary();
-                } else {
-                    renderTopic(catId, topicId);
-                }
-                document.getElementById('globalSearch').value = '';
-                searchResults.style.display = 'none';
             };
 
-            const fab = document.getElementById('fab');
-            const drawer = document.getElementById('drawer');
-            const closeDrawer = document.getElementById('closeDrawer');
-            const saveBtn = document.getElementById('saveBtn');
-
-            fab.addEventListener('click', () => drawer.classList.add('open'));
-            closeDrawer.addEventListener('click', () => drawer.classList.remove('open'));
-
-            saveBtn.addEventListener('click', async () => {
-                const name = document.getElementById('newName').value;
-                const notes = document.getElementById('newNotes').value;
-                const video = document.getElementById('newVideo').value;
-                const pdf = document.getElementById('newPDF').value;
-                const tagsRaw = document.getElementById('newTags').value;
-                const fileInput = document.getElementById('newFile');
-                
-                if (!name || !notes) {
-                    showToast("ERROR: TOPIC NAME AND NOTES ARE REQUIRED");
+            // Save new user injected technical block
+            document.getElementById('saveBtn').onclick = () => {
+                const title = document.getElementById('newName').value;
+                const story = document.getElementById('newStory').value;
+                const specs = document.getElementById('newSpecs').value;
+                if (!title || (!story && !specs)) {
+                    showToast("⚠️ PLEASE FILL IN TOPIC NAME AND EITHER A STORY OR SPECS!");
                     return;
                 }
 
-                let imageData = '';
-                if (fileInput.files && fileInput.files[0]) {
-                    const reader = new FileReader();
-                    imageData = await new Promise(resolve => {
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.readAsDataURL(fileInput.files[0]);
-                    });
-                }
-
-                const newTopic = {
-                    title: name,
-                    summary: notes.substring(0, 100) + "...",
-                    concepts: [{ title: "User Contribution", text: notes }],
-                    video: video || null,
-                    image: imageData || null,
-                    pdf: pdf || null,
-                    tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : [],
-                    isUserAdded: true
+                const obj = {
+                    title: title,
+                    category: document.getElementById('newCat').value,
+                    story: story,
+                    notes: specs,
+                    video: document.getElementById('newVideo').value,
+                    tags: document.getElementById('newTags').value.split(',')
                 };
 
-                const userContent = JSON.parse(localStorage.getItem('dc_user_content') || '[]');
-                userContent.push(newTopic);
+                userContent.push(obj);
                 localStorage.setItem('dc_user_content', JSON.stringify(userContent));
-
-                injectUserContentToSidebar();
-                drawer.classList.remove('open');
-                showToast("SUCCESS: BLOCK INJECTED TO VENDOR TECHNOLOGIES");
                 
-                document.getElementById('newName').value = '';
-                document.getElementById('newNotes').value = '';
-                document.getElementById('newVideo').value = '';
-                document.getElementById('newPDF').value = '';
-                document.getElementById('newTags').value = '';
-                document.getElementById('newFile').value = '';
-            });
+                // Reset form fields
+                ['newName', 'newStory', 'newSpecs', 'newVideo', 'newTags'].forEach(id => document.getElementById(id).value = '');
+                
+                document.getElementById('drawer').classList.remove('open');
+                document.getElementById('drawerOverlay').style.display = 'none';
+                
+                showToast("🎉 INJECTED NEW TOPIC INTO LOCAL PLAYGROUND SYSTEM!");
+                renderSidebar();
+            };
         }
 
-        function injectUserContentToSidebar() {
-            const container = document.getElementById('user-topics-container');
-            const userContent = JSON.parse(localStorage.getItem('dc_user_content') || '[]');
+        function showToast(msg) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        }
+
+        // Cancel all animations on frame updates
+        function cancelAllAnimations() {
+            Object.keys(activeAnimations).forEach(key => {
+                if (activeAnimations[key]) {
+                    if (activeAnimations[key].interval) clearInterval(activeAnimations[key].interval);
+                    if (activeAnimations[key].frameId) cancelAnimationFrame(activeAnimations[key].frameId);
+                }
+            });
+            activeAnimations = {};
+        }
+
+        /* 
+         * ==========================================
+         * DYNAMIC INTERACTIVE PLAYGROUND ANIMATIONS 
+         * ==========================================
+         */
+        function initDiagram(type) {
+            const container = document.getElementById('canvas-container');
+            const controls = document.getElementById('canvas-controllers');
+            if (!container) return;
+
+            container.innerHTML = '';
+            controls.innerHTML = '';
+
+            if (type === 'osi') {
+                setupOSIPlayground(container, controls);
+            } else if (type === 'switching') {
+                setupSwitchingPlayground(container, controls);
+            } else if (type === 'fiberoptics') {
+                setupFiberPlayground(container, controls);
+            } else if (type === 'tcpudp') {
+                setupTCPUDPPlayground(container, controls);
+            } else if (type === 'leakybucket') {
+                setupLeakyBucketPlayground(container, controls);
+            } else if (type === 'tokenring') {
+                setupTokenRingPlayground(container, controls);
+            }
+        }
+
+        // 1. OSI Model mailing game animation
+        function setupOSIPlayground(container, controls) {
+            controls.innerHTML = `
+                <button class="control-btn" id="btn-start-osi">✉️ Start Mailing Game</button>
+                <div style="font-size:0.8rem; color:var(--text-dim); margin-left:12px;" id="osi-status">Status: Idle</div>
+            `;
             
-            TECH_CONTENT['vendor-technologies'].topics = {}; 
-            
-            if (userContent.length === 0) {
-                container.innerHTML = '<div style="padding: 10px 24px; font-size: 0.75rem; color: var(--text-dim); font-style: italic">No user modules detected...</div>';
-                return;
+            container.innerHTML = `
+                <svg width="100%" height="380" viewBox="0 0 800 380" style="background:#050a12; border-radius:8px;" id="osi-svg">
+                    <!-- Left: Sender Tower -->
+                    <text x="140" y="30" fill="white" font-weight="bold" text-anchor="middle">SENDER (YOU)</text>
+                    ${[7,6,5,4,3,2,1].map((l, i) => `
+                        <g transform="translate(40, ${40 + i*40})">
+                            <rect x="0" y="0" width="200" height="30" rx="4" fill="rgba(0, 212, 255, 0.1)" stroke="var(--accent)" stroke-width="1" id="left-l${l}"/>
+                            <text x="100" y="20" fill="white" font-size="11" font-family="var(--font-mono)" text-anchor="middle" id="left-txt-${l}">L${l}: ${getOSILayerName(l)}</text>
+                        </g>
+                    `).join('')}
+
+                    <!-- Wire Link -->
+                    <line x1="240" y1="320" x2="560" y2="320" stroke="#334155" stroke-width="6" stroke-dasharray="10 5" id="osi-wire"/>
+                    <rect x="360" y="295" width="80" height="20" rx="10" fill="#1e293b" stroke="#475569"/>
+                    <text x="400" y="309" fill="white" font-size="9" text-anchor="middle" id="wire-bits">WIRE</text>
+
+                    <!-- Right: Receiver Tower -->
+                    <text x="660" y="30" fill="white" font-weight="bold" text-anchor="middle">RECEIVER (FRIEND)</text>
+                    ${[7,6,5,4,3,2,1].map((l, i) => `
+                        <g transform="translate(560, ${40 + i*40})">
+                            <rect x="0" y="0" width="200" height="30" rx="4" fill="rgba(0, 212, 255, 0.1)" stroke="var(--border)" stroke-width="1" id="right-l${l}"/>
+                            <text x="100" y="20" fill="var(--text-dim)" font-size="11" font-family="var(--font-mono)" text-anchor="middle" id="right-txt-${l}">L${l}: ${getOSILayerName(l)}</text>
+                        </g>
+                    `).join('')}
+
+                    <!-- Traveling Envelope Icon -->
+                    <g id="osi-packet" transform="translate(140, 55)" style="display:none; transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);">
+                        <rect x="-20" y="-12" width="40" height="24" rx="3" fill="var(--accent-sec)" stroke="#fff" stroke-width="1"/>
+                        <path d="M-20 -12 L0 0 L20 -12" fill="none" stroke="#fff"/>
+                        <text x="0" y="16" fill="white" font-size="8" text-anchor="middle" id="packet-label">Letter</text>
+                    </g>
+                </svg>
+            `;
+
+            function getOSILayerName(l) {
+                const names = ["", "Physical", "Data Link", "Network", "Transport", "Session", "Presentation", "Application"];
+                return names[l];
             }
 
-            container.innerHTML = userContent.map((topic, idx) => {
-                const topicId = `user-${idx}`;
-                TECH_CONTENT['vendor-technologies'].topics[topicId] = topic;
-                return `
-                    <div class="topic-link" data-cat="vendor-technologies" data-topic="${topicId}">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px"><path d="M12 20v-6M9 20V10M15 20V4M6 20v-4M18 20V8"></path></svg>
-                        ${topic.title}
-                    </div>
-                `;
-            }).join('');
+            const startBtn = document.getElementById('btn-start-osi');
+            const statusEl = document.getElementById('osi-status');
+            const packet = document.getElementById('osi-packet');
+            const packetLabel = document.getElementById('packet-label');
 
-            document.querySelectorAll('.topic-link').forEach(link => {
-                link.onclick = () => {
-                    const catId = link.dataset.cat;
-                    const topicId = link.dataset.topic;
-                    renderTopic(catId, topicId);
-                    document.querySelectorAll('.topic-link').forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                };
-            });
+            let animTimeout = null;
+
+            startBtn.onclick = () => {
+                startBtn.disabled = true;
+                // Reset
+                for (let l = 1; l <= 7; l++) {
+                    document.getElementById(`left-l${l}`).setAttribute('fill', 'rgba(0, 212, 255, 0.1)');
+                    document.getElementById(`right-l${l}`).setAttribute('fill', 'rgba(0, 212, 255, 0.1)');
+                    document.getElementById(`right-txt-${l}`).setAttribute('fill', 'var(--text-dim)');
+                }
+                document.getElementById('osi-wire').setAttribute('stroke', '#334155');
+
+                packet.style.display = 'block';
+                statusEl.innerText = "Step 1: Packing message (Encapsulation)...";
+
+                // Step sequence
+                let step = 7;
+                function runLeft() {
+                    if (step >= 1) {
+                        packet.style.transform = `translate(140px, ${55 + (7-step)*40}px)`;
+                        const layerEl = document.getElementById(`left-l${step}`);
+                        layerEl.setAttribute('fill', 'rgba(245, 158, 11, 0.3)');
+                        packetLabel.textContent = `Env #${8-step}`;
+                        
+                        animTimeout = setTimeout(() => {
+                            layerEl.setAttribute('fill', 'rgba(0, 212, 255, 0.2)');
+                            step--;
+                            runLeft();
+                        }, 700);
+                    } else {
+                        // Move to wire
+                        statusEl.innerText = "Step 2: Traveling over physical wire link as bits...";
+                        packet.style.transform = `translate(140px, 320px)`;
+                        
+                        animTimeout = setTimeout(() => {
+                            // Wire animation
+                            document.getElementById('osi-wire').setAttribute('stroke', 'var(--accent)');
+                            packet.style.transform = `translate(660px, 320px)`;
+                            
+                            // Pulse binary bits on the label
+                            let pulseCount = 0;
+                            const pulseInterval = setInterval(() => {
+                                document.getElementById('wire-bits').textContent = Math.random() > 0.5 ? "10101011" : "01011100";
+                                pulseCount++;
+                                if (pulseCount > 8) {
+                                    clearInterval(pulseInterval);
+                                    document.getElementById('wire-bits').textContent = "WIRE";
+                                    step = 1;
+                                    runRight();
+                                }
+                            }, 100);
+                        }, 700);
+                    }
+                }
+
+                function runRight() {
+                    if (step <= 7) {
+                        statusEl.innerText = "Step 3: Unpacking envelopes (Decapsulation)...";
+                        packet.style.transform = `translate(660px, ${55 + (7-step)*40}px)`;
+                        const layerEl = document.getElementById(`right-l${step}`);
+                        const textEl = document.getElementById(`right-txt-${step}`);
+                        layerEl.setAttribute('fill', 'rgba(16, 185, 129, 0.3)');
+                        textEl.setAttribute('fill', 'white');
+                        packetLabel.textContent = `Env #${7-step}`;
+
+                        animTimeout = setTimeout(() => {
+                            layerEl.setAttribute('fill', 'rgba(16, 185, 129, 0.1)');
+                            step++;
+                            runRight();
+                        }, 700);
+                    } else {
+                        packet.style.display = 'none';
+                        statusEl.innerText = "Success! Letter received securely! 🎉";
+                        startBtn.disabled = false;
+                        showToast("📬 YOUR LETTER ARRIVED SAFE AND SOUND!");
+                    }
+                }
+
+                runLeft();
+            };
+
+            activeAnimations['osi'] = {
+                interval: null,
+                clear: () => clearTimeout(animTimeout)
+            };
         }
 
-        setupEventListeners();
-        injectUserContentToSidebar();
-        renderTopic('networking-fundamentals', 'osi-model');
+        // 2. Circuit vs Packet Switching animation
+        function setupSwitchingPlayground(container, controls) {
+            controls.innerHTML = `
+                <button class="control-btn" id="btn-toggle-switch">Mode: Packet Switching</button>
+                <button class="control-btn" id="btn-send-switch">▶️ Send File</button>
+                <div style="font-size:0.8rem; color:var(--text-dim); margin-left:12px;" id="switch-status">Select mode and click Send</div>
+            `;
+
+            container.innerHTML = `
+                <svg width="100%" height="380" viewBox="0 0 800 380" style="background:#050a12; border-radius:8px;" id="switch-svg">
+                    <!-- Nodes -->
+                    <!-- Sender Node -->
+                    <g transform="translate(100, 190)" id="switch-sender">
+                        <circle cx="0" cy="0" r="30" fill="#1e293b" stroke="var(--accent)" stroke-width="2"/>
+                        <text cx="0" cy="5" fill="white" font-weight="bold" text-anchor="middle" font-size="10">SENDER</text>
+                    </g>
+                    <!-- Routers -->
+                    <g transform="translate(300, 100)" class="r-node" id="r1">
+                        <circle cx="0" cy="0" r="22" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+                        <text cx="0" cy="4" fill="white" font-family="var(--font-mono)" text-anchor="middle" font-size="9">R1</text>
+                    </g>
+                    <g transform="translate(300, 280)" class="r-node" id="r2">
+                        <circle cx="0" cy="0" r="22" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+                        <text cx="0" cy="4" fill="white" font-family="var(--font-mono)" text-anchor="middle" font-size="9">R2</text>
+                    </g>
+                    <g transform="translate(500, 100)" class="r-node" id="r3">
+                        <circle cx="0" cy="0" r="22" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+                        <text cx="0" cy="4" fill="white" font-family="var(--font-mono)" text-anchor="middle" font-size="9">R3</text>
+                    </g>
+                    <g transform="translate(500, 280)" class="r-node" id="r4">
+                        <circle cx="0" cy="0" r="22" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+                        <text cx="0" cy="4" fill="white" font-family="var(--font-mono)" text-anchor="middle" font-size="9">R4</text>
+                    </g>
+                    <!-- Receiver Node -->
+                    <g transform="translate(700, 190)" id="switch-receiver">
+                        <circle cx="0" cy="0" r="30" fill="#1e293b" stroke="var(--accent)" stroke-width="2"/>
+                        <text cx="0" cy="5" fill="white" font-weight="bold" text-anchor="middle" font-size="10">RECEIVER</text>
+                    </g>
+
+                    <!-- Links Lines -->
+                    <path d="M130 190 L278 100" stroke="#334155" stroke-width="2" id="l-s-r1"/>
+                    <path d="M130 190 L278 280" stroke="#334155" stroke-width="2" id="l-s-r2"/>
+                    <path d="M322 100 L478 100" stroke="#334155" stroke-width="2" id="l-r1-r3"/>
+                    <path d="M322 100 L478 280" stroke="#334155" stroke-width="2" id="l-r1-r4"/>
+                    <path d="M322 280 L478 100" stroke="#334155" stroke-width="2" id="l-r2-r3"/>
+                    <path d="M322 280 L478 280" stroke="#334155" stroke-width="2" id="l-r2-r4"/>
+                    <path d="M522 100 L670 190" stroke="#334155" stroke-width="2" id="l-r3-rec"/>
+                    <path d="M522 280 L670 190" stroke="#334155" stroke-width="2" id="l-r4-rec"/>
+
+                    <!-- Animation packets -->
+                    <g id="packets-group"></g>
+                </svg>
+            `;
+
+            let isPacketMode = true;
+            const toggleBtn = document.getElementById('btn-toggle-switch');
+            const sendBtn = document.getElementById('btn-send-switch');
+            const statusEl = document.getElementById('switch-status');
+            const packetsGroup = document.getElementById('packets-group');
+
+            toggleBtn.onclick = () => {
+                isPacketMode = !isPacketMode;
+                toggleBtn.textContent = isPacketMode ? "Mode: Packet Switching" : "Mode: Circuit Switching";
+                statusEl.innerText = isPacketMode ? "Puzzle mode: pieces travel independently." : "Train mode: locked path established first.";
+                resetLinks();
+            };
+
+            function resetLinks() {
+                const links = ["l-s-r1", "l-s-r2", "l-r1-r3", "l-r1-r4", "l-r2-r3", "l-r2-r4", "l-r3-rec", "l-r4-rec"];
+                links.forEach(id => {
+                    document.getElementById(id).setAttribute('stroke', '#334155');
+                    document.getElementById(id).setAttribute('stroke-width', '2');
+                });
+                packetsGroup.innerHTML = '';
+            }
+
+            let timers = [];
+            sendBtn.onclick = () => {
+                sendBtn.disabled = true;
+                toggleBtn.disabled = true;
+                resetLinks();
+                
+                timers.forEach(clearTimeout);
+                timers = [];
+
+                if (!isPacketMode) {
+                    // Circuit switching: establish connection
+                    statusEl.innerText = "1. Reserving dedicated path (R1 -> R3)...";
+                    const route = ["l-s-r1", "l-r1-r3", "l-r3-rec"];
+                    
+                    route.forEach((id, index) => {
+                        timers.push(setTimeout(() => {
+                            const link = document.getElementById(id);
+                            link.setAttribute('stroke', '#f59e0b');
+                            link.setAttribute('stroke-width', '4');
+                        }, index * 400));
+                    });
+
+                    timers.push(setTimeout(() => {
+                        statusEl.innerText = "2. Path locked. Sending file continuously...";
+                        // Stream circles along path
+                        for(let i=0; i<15; i++) {
+                            timers.push(setTimeout(() => {
+                                const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                                dot.setAttribute("r", "5");
+                                dot.setAttribute("fill", "#10b981");
+                                packetsGroup.appendChild(dot);
+                                animateDotAlongPath(dot, [
+                                    {x: 100, y: 190},
+                                    {x: 300, y: 100},
+                                    {x: 500, y: 100},
+                                    {x: 700, y: 190}
+                                ], 1000);
+                            }, i * 150));
+                        }
+                    }, 1300));
+
+                    timers.push(setTimeout(() => {
+                        statusEl.innerText = "3. Transmission done. Releasing reserved tracks.";
+                        resetLinks();
+                        sendBtn.disabled = false;
+                        toggleBtn.disabled = false;
+                    }, 4500));
+
+                } else {
+                    // Packet switching: send independently
+                    statusEl.innerText = "Sending file as 4 separate packages...";
+                    const colors = ["#ef4444", "#3b82f6", "#10b981", "#eab308"];
+                    
+                    // Paths:
+                    // P1: S -> R1 -> R3 -> Rec
+                    // P2: S -> R2 -> R4 -> Rec
+                    // P3: S -> R1 -> R4 -> Rec
+                    // P4: S -> R2 -> R3 -> Rec
+                    const paths = [
+                        [{x: 100, y: 190}, {x: 300, y: 100}, {x: 500, y: 100}, {x: 700, y: 190}],
+                        [{x: 100, y: 190}, {x: 300, y: 280}, {x: 500, y: 280}, {x: 700, y: 190}],
+                        [{x: 100, y: 190}, {x: 300, y: 100}, {x: 500, y: 280}, {x: 700, y: 190}],
+                        [{x: 100, y: 190}, {x: 300, y: 280}, {x: 500, y: 100}, {x: 700, y: 190}]
+                    ];
+
+                    paths.forEach((path, i) => {
+                        timers.push(setTimeout(() => {
+                            const dot = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                            dot.setAttribute("width", "12");
+                            dot.setAttribute("height", "12");
+                            dot.setAttribute("x", "-6");
+                            dot.setAttribute("y", "-6");
+                            dot.setAttribute("rx", "2");
+                            dot.setAttribute("fill", colors[i]);
+                            packetsGroup.appendChild(dot);
+                            
+                            animateDotAlongPath(dot, path, 1400);
+                        }, i * 300));
+                    });
+
+                    timers.push(setTimeout(() => {
+                        statusEl.innerText = "All packets arrived and built into final file! 🧩";
+                        sendBtn.disabled = false;
+                        toggleBtn.disabled = false;
+                    }, 3000));
+                }
+            };
+
+            function animateDotAlongPath(element, coords, duration) {
+                let startTime = null;
+                function step(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    const progress = (timestamp - startTime) / duration;
+                    if (progress < 1) {
+                        // Interpolate coordinates
+                        const segs = coords.length - 1;
+                        const currSeg = Math.floor(progress * segs);
+                        const segProgress = (progress * segs) - currSeg;
+                        
+                        const start = coords[currSeg];
+                        const end = coords[currSeg + 1];
+                        
+                        const x = start.x + (end.x - start.x) * segProgress;
+                        const y = start.y + (end.y - start.y) * segProgress;
+                        
+                        element.setAttribute("cx" in element ? "cx" : "x", "cx" in element ? x : x - 6);
+                        element.setAttribute("cy" in element ? "cy" : "y", "cy" in element ? y : y - 6);
+                        
+                        requestAnimationFrame(step);
+                    } else {
+                        element.remove();
+                    }
+                }
+                requestAnimationFrame(step);
+            }
+
+            activeAnimations['switching'] = {
+                interval: null,
+                clear: () => timers.forEach(clearTimeout)
+            };
+        }
+
+        // 3. TCP vs UDP chat balloon animation
+        function setupTCPUDPPlayground(container, controls) {
+            controls.innerHTML = `
+                <button class="control-btn" id="btn-send-tcp">📞 Send TCP (Safe Call)</button>
+                <button class="control-btn" id="btn-send-udp">🎈 Send UDP (Balloon Toss)</button>
+                <div style="font-size:0.8rem; color:var(--text-dim); margin-left:12px;" id="tcp-status">Status: Ready</div>
+            `;
+
+            container.innerHTML = `
+                <svg width="100%" height="380" viewBox="0 0 800 380" style="background:#050a12; border-radius:8px;" id="tcp-svg">
+                    <line x1="200" y1="50" x2="200" y2="350" stroke="#334155" stroke-dasharray="5 5"/>
+                    <line x1="600" y1="50" x2="600" y2="350" stroke="#334155" stroke-dasharray="5 5"/>
+                    <text x="200" y="40" fill="white" font-weight="bold" text-anchor="middle">SENDER</text>
+                    <text x="600" y="40" fill="white" font-weight="bold" text-anchor="middle">RECEIVER</text>
+                    
+                    <!-- Chat / Packet Lines Dynamic Group -->
+                    <g id="tcp-lines"></g>
+                </svg>
+            `;
+
+            const tcpLines = document.getElementById('tcp-lines');
+            const tcpStatus = document.getElementById('tcp-status');
+            const btnTCP = document.getElementById('btn-send-tcp');
+            const btnUDP = document.getElementById('btn-send-udp');
+
+            let timers = [];
+
+            function clearScreen() {
+                tcpLines.innerHTML = '';
+                timers.forEach(clearTimeout);
+                timers = [];
+            }
+
+            btnTCP.onclick = () => {
+                clearScreen();
+                btnTCP.disabled = true;
+                btnUDP.disabled = true;
+                tcpStatus.innerText = "Establishing TCP Three-Way Handshake...";
+
+                // Handshake step 1 (SYN)
+                drawSyncLine(200, 70, 600, 100, "SYN (Ready to talk?)", "var(--accent)");
+                
+                timers.push(setTimeout(() => {
+                    // Handshake step 2 (SYN-ACK)
+                    drawSyncLine(600, 100, 200, 130, "SYN-ACK (Yes, let's talk!)", "var(--accent-sec)");
+                }, 800));
+
+                timers.push(setTimeout(() => {
+                    // Handshake step 3 (ACK)
+                    drawSyncLine(200, 130, 600, 160, "ACK (Connection established!)", "var(--accent)");
+                    tcpStatus.innerText = "Connection Established. Transmitting Segment 1...";
+                }, 1600));
+
+                timers.push(setTimeout(() => {
+                    drawSyncLine(200, 180, 600, 210, "DATA 1 (Sending part 1)", "#3b82f6");
+                }, 2400));
+
+                timers.push(setTimeout(() => {
+                    drawSyncLine(600, 210, 200, 240, "ACK 1 (Got part 1 safely!)", "#10b981");
+                    tcpStatus.innerText = "Segment 1 Acknowledged. Sending Segment 2...";
+                }, 3200));
+
+                timers.push(setTimeout(() => {
+                    drawSyncLine(200, 260, 600, 290, "DATA 2 (Sending part 2)", "#3b82f6");
+                }, 4000));
+
+                timers.push(setTimeout(() => {
+                    drawSyncLine(600, 290, 200, 320, "ACK 2 (Got part 2 safely!)", "#10b981");
+                    tcpStatus.innerText = "Transmission Complete! Closing Connection...";
+                }, 4800));
+
+                timers.push(setTimeout(() => {
+                    tcpStatus.innerText = "TCP Session closed safely! Zero packet loss.";
+                    btnTCP.disabled = false;
+                    btnUDP.disabled = false;
+                }, 5600));
+            };
+
+            btnUDP.onclick = () => {
+                clearScreen();
+                btnTCP.disabled = true;
+                btnUDP.disabled = true;
+                tcpStatus.innerText = "UDP Stream: Hurling packets instantly...";
+
+                // Fire multiple data packets consecutively without handshakes or ACKs
+                for(let i=0; i<6; i++) {
+                    timers.push(setTimeout(() => {
+                        const yStart = 80 + i*40;
+                        const yEnd = 110 + i*40;
+                        const isLost = i === 2 || i === 4; // Intentionally lose two packets
+                        
+                        drawUDPBalloonLine(200, yStart, 600, yEnd, `DATA ${i+1} ${isLost ? '(Lost!) ❌' : '(Arrived!) 🎈'}`, isLost);
+                    }, i * 350));
+                }
+
+                timers.push(setTimeout(() => {
+                    tcpStatus.innerText = "UDP Completed. 4 packets received, 2 packets lost. No retransmissions requested.";
+                    btnTCP.disabled = false;
+                    btnUDP.disabled = false;
+                }, 2800));
+            };
+
+            function drawSyncLine(x1, y1, x2, y2, text, color) {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", x1);
+                line.setAttribute("y1", y1);
+                line.setAttribute("x2", x1);
+                line.setAttribute("y2", y1);
+                line.setAttribute("stroke", color);
+                line.setAttribute("stroke-width", "3");
+                line.setAttribute("marker-end", "url(#arrow)");
+                tcpLines.appendChild(line);
+
+                const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                txt.setAttribute("x", (x1+x2)/2);
+                txt.setAttribute("y", (y1+y2)/2 - 5);
+                txt.setAttribute("fill", "#fff");
+                txt.setAttribute("font-size", "10");
+                txt.setAttribute("text-anchor", "middle");
+                txt.textContent = text;
+                txt.setAttribute("opacity", "0");
+                tcpLines.appendChild(txt);
+
+                // Animate
+                let start = null;
+                const duration = 600;
+                function draw(time) {
+                    if (!start) start = time;
+                    const p = (time - start) / duration;
+                    if (p < 1) {
+                        line.setAttribute("x2", x1 + (x2-x1)*p);
+                        line.setAttribute("y2", y1 + (y2-y1)*p);
+                        requestAnimationFrame(draw);
+                    } else {
+                        line.setAttribute("x2", x2);
+                        line.setAttribute("y2", y2);
+                        txt.setAttribute("opacity", "1");
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+
+            function drawUDPBalloonLine(x1, y1, x2, y2, text, isLost) {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", x1);
+                line.setAttribute("y1", y1);
+                line.setAttribute("x2", x1);
+                line.setAttribute("y2", y1);
+                line.setAttribute("stroke", isLost ? "#ef4444" : "#10b981");
+                line.setAttribute("stroke-width", "2");
+                tcpLines.appendChild(line);
+
+                const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                txt.setAttribute("x", isLost ? 350 : (x1+x2)/2);
+                txt.setAttribute("y", (y1+y2)/2 - 5);
+                txt.setAttribute("fill", isLost ? "#f87171" : "#a7f3d0");
+                txt.setAttribute("font-size", "10");
+                txt.setAttribute("text-anchor", "middle");
+                txt.textContent = text;
+                txt.setAttribute("opacity", "0");
+                tcpLines.appendChild(txt);
+
+                let start = null;
+                const duration = 500;
+                function draw(time) {
+                    if (!start) start = time;
+                    const p = (time - start) / duration;
+                    if (p < 1) {
+                        if (isLost && p > 0.5) {
+                            // Stop midway
+                            line.setAttribute("x2", x1 + (x2-x1)*0.5);
+                            line.setAttribute("y2", y1 + (y2-y1)*0.5);
+                            txt.setAttribute("opacity", "1");
+                        } else {
+                            line.setAttribute("x2", x1 + (x2-x1)*p);
+                            line.setAttribute("y2", y1 + (y2-y1)*p);
+                            requestAnimationFrame(draw);
+                        }
+                    } else {
+                        if (!isLost) {
+                            line.setAttribute("x2", x2);
+                            line.setAttribute("y2", y2);
+                            txt.setAttribute("opacity", "1");
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+
+            activeAnimations['tcpudp'] = {
+                interval: null,
+                clear: () => clearScreen()
+            };
+        }
+
+        // 4. Leaky Bucket water drip animation
+        function setupLeakyBucketPlayground(container, controls) {
+            controls.innerHTML = `
+                <div class="parameter-slider">
+                    <label>💧 Water Faucet Speed:</label>
+                    <input type="range" id="faucet-rate" min="0" max="100" value="30">
+                </div>
+                <button class="control-btn" id="btn-clear-bucket" style="margin-left:12px;">Reset Bucket</button>
+            `;
+
+            container.innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
+                    <svg width="400" height="360" viewBox="0 0 300 300" style="background:#050a12; border-radius:8px;" id="leaky-svg">
+                        <!-- Faucet -->
+                        <path d="M120 20 L180 20 L180 40 L160 40 L160 55" fill="none" stroke="#64748b" stroke-width="8"/>
+                        <circle cx="160" cy="55" r="5" fill="#38bdf8"/>
+                        
+                        <!-- Water Bucket -->
+                        <path d="M90 100 L110 240 L190 240 L210 100 Z" fill="none" stroke="#e2e8f0" stroke-width="4"/>
+                        <!-- Water dynamic layer -->
+                        <polygon points="110 240, 190 240, 190 240, 110 240" fill="rgba(56, 189, 248, 0.4)" id="bucket-water"/>
+                        
+                        <!-- Drip outlet -->
+                        <line x1="150" y1="240" x2="150" y2="250" stroke="#e2e8f0" stroke-width="4"/>
+                        <circle cx="150" cy="270" r="4" fill="#38bdf8" id="bucket-drip" style="opacity:0;"/>
+                        
+                        <!-- Status text inside SVG -->
+                        <text x="150" y="170" fill="white" font-weight="bold" font-size="12" text-anchor="middle" id="bucket-warning"></text>
+                    </svg>
+                </div>
+            `;
+
+            const water = document.getElementById('bucket-water');
+            const drip = document.getElementById('bucket-drip');
+            const warning = document.getElementById('bucket-warning');
+            const faucetSlider = document.getElementById('faucet-rate');
+            const resetBtn = document.getElementById('btn-clear-bucket');
+
+            let fillLevel = 0; // percentage
+            const capacity = 240; // bottom y=240, top y=100
+            
+            // Interval to simulate dripping & pouring
+            const interval = setInterval(() => {
+                const flowRate = parseFloat(faucetSlider.value) / 10;
+                
+                // Add water based on flowRate
+                if (flowRate > 0) {
+                    fillLevel += flowRate;
+                    // Spawn drop falling from faucet
+                    spawnDrop();
+                }
+
+                // Leak water at constant rate (e.g. 1.2 units per step)
+                if (fillLevel > 0) {
+                    fillLevel = Math.max(0, fillLevel - 1.2);
+                    dripWater();
+                }
+
+                // Check for overflow
+                if (fillLevel > 100) {
+                    fillLevel = 100;
+                    warning.textContent = "💥 OVERFLOW! PACKETS LOST!";
+                    warning.setAttribute("fill", "#ef4444");
+                } else {
+                    warning.textContent = fillLevel > 70 ? "⚠️ Buffer filling up..." : "";
+                    warning.setAttribute("fill", "#f59e0b");
+                }
+
+                // Update SVG points
+                updateWaterPolygon();
+
+            }, 100);
+
+            function updateWaterPolygon() {
+                const heightOffset = fillLevel * 1.4; // 140px max height
+                const yTop = 240 - heightOffset;
+                
+                // Calculate width at current depth
+                const xLeft = 110 - (fillLevel * 0.2);
+                const xRight = 190 + (fillLevel * 0.2);
+
+                water.setAttribute("points", `110 240, 190 240, ${xRight} ${yTop}, ${xLeft} ${yTop}`);
+            }
+
+            function spawnDrop() {
+                const drop = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                drop.setAttribute("cx", "160");
+                drop.setAttribute("cy", "60");
+                drop.setAttribute("r", "3");
+                drop.setAttribute("fill", "#38bdf8");
+                document.getElementById('leaky-svg').appendChild(drop);
+
+                let start = null;
+                const duration = 300;
+                const heightLimit = 240 - (fillLevel * 1.4);
+                function animate(time) {
+                    if (!start) start = time;
+                    const p = (time - start) / duration;
+                    if (p < 1) {
+                        const y = 60 + (heightLimit - 60) * p;
+                        drop.setAttribute("cy", y);
+                        requestAnimationFrame(animate);
+                    } else {
+                        drop.remove();
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+
+            function dripWater() {
+                drip.style.opacity = '1';
+                let start = null;
+                const duration = 400;
+                function animate(time) {
+                    if (!start) start = time;
+                    const p = (time - start) / duration;
+                    if (p < 1) {
+                        drip.setAttribute("cy", 250 + 40*p);
+                        drip.style.opacity = 1 - p;
+                        requestAnimationFrame(animate);
+                    } else {
+                        drip.style.opacity = '0';
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+
+            resetBtn.onclick = () => {
+                fillLevel = 0;
+                updateWaterPolygon();
+                warning.textContent = "";
+            };
+
+            activeAnimations['leakybucket'] = {
+                interval: interval,
+                clear: () => clearInterval(interval)
+            };
+        }
+
+        // 5. Token Ring pass network animation
+        function setupTokenRingPlayground(container, controls) {
+            controls.innerHTML = `
+                <button class="control-btn" id="btn-enqueue-node">🪄 Enqueue Node Msg</button>
+                <div style="font-size:0.8rem; color:var(--text-dim); margin-left:12px;" id="token-status">Wait for the token to transmit messages.</div>
+            `;
+
+            container.innerHTML = `
+                <svg width="100%" height="380" viewBox="0 0 800 380" style="background:#050a12; border-radius:8px;" id="token-svg">
+                    <!-- Circle layout Ring path -->
+                    <circle cx="400" cy="190" r="110" fill="none" stroke="#1e293b" stroke-width="4"/>
+
+                    <!-- Nodes -->
+                    <!-- Node A (0 deg) -->
+                    <g transform="translate(400, 80)" class="token-node" id="n-a">
+                        <circle cx="0" cy="0" r="20" fill="#1e293b" stroke="#475569" stroke-width="2" id="node-a-circle"/>
+                        <text cx="0" cy="4" fill="white" font-weight="bold" text-anchor="middle" font-size="10">A</text>
+                    </g>
+                    <!-- Node B (72 deg) -->
+                    <g transform="translate(505, 156)" class="token-node" id="n-b">
+                        <circle cx="0" cy="0" r="20" fill="#1e293b" stroke="#475569" stroke-width="2" id="node-b-circle"/>
+                        <text cx="0" cy="4" fill="white" font-weight="bold" text-anchor="middle" font-size="10">B</text>
+                    </g>
+                    <!-- Node C (144 deg) -->
+                    <g transform="translate(465, 279)" class="token-node" id="n-c">
+                        <circle cx="0" cy="0" r="20" fill="#1e293b" stroke="#475569" stroke-width="2" id="node-c-circle"/>
+                        <text cx="0" cy="4" fill="white" font-weight="bold" text-anchor="middle" font-size="10">C</text>
+                    </g>
+                    <!-- Node D (216 deg) -->
+                    <g transform="translate(335, 279)" class="token-node" id="n-d">
+                        <circle cx="0" cy="0" r="20" fill="#1e293b" stroke="#475569" stroke-width="2" id="node-d-circle"/>
+                        <text cx="0" cy="4" fill="white" font-weight="bold" text-anchor="middle" font-size="10">D</text>
+                    </g>
+                    <!-- Node E (288 deg) -->
+                    <g transform="translate(295, 156)" class="token-node" id="n-e">
+                        <circle cx="0" cy="0" r="20" fill="#1e293b" stroke="#475569" stroke-width="2" id="node-e-circle"/>
+                        <text cx="0" cy="4" fill="white" font-weight="bold" text-anchor="middle" font-size="10">E</text>
+                    </g>
+
+                    <!-- Token visual ring -->
+                    <circle cx="400" cy="80" r="8" fill="var(--accent-sec)" id="token-indicator" filter="drop-shadow(0 0 8px var(--accent-sec))"/>
+                </svg>
+            `;
+
+            const tokenIndicator = document.getElementById('token-indicator');
+            const statusEl = document.getElementById('token-status');
+            const enqueueBtn = document.getElementById('btn-enqueue-node');
+
+            const angles = [0, 72, 144, 216, 288]; // A, B, C, D, E coords
+            const nodeIds = ['a', 'b', 'c', 'd', 'e'];
+            let currentTokenPosition = 0; // index of node holding token
+            let messageQueue = []; // indices of nodes waiting to send data
+
+            enqueueBtn.onclick = () => {
+                // Randomly assign a node message
+                const randomNodeIndex = Math.floor(Math.random() * 5);
+                const nodeId = nodeIds[randomNodeIndex];
+                if (!messageQueue.includes(randomNodeIndex)) {
+                    messageQueue.push(randomNodeIndex);
+                    document.getElementById(`node-${nodeId}-circle`).setAttribute("stroke", "var(--accent)");
+                    statusEl.innerText = `Node ${nodeId.toUpperCase()} queued a message! Waiting for token...`;
+                }
+            };
+
+            // Loop to pass the token clockwise around the circle
+            const interval = setInterval(() => {
+                if (messageQueue.includes(currentTokenPosition)) {
+                    // This node has a message to send!
+                    const nodeId = nodeIds[currentTokenPosition];
+                    statusEl.innerText = `Token captured by Node ${nodeId.toUpperCase()}. Sending packet!`;
+                    document.getElementById(`node-${nodeId}-circle`).setAttribute("fill", "rgba(16, 185, 129, 0.4)");
+                    
+                    // Remove from queue
+                    messageQueue = messageQueue.filter(item => item !== currentTokenPosition);
+                    
+                    // Stop token rotation for a moment to transmit
+                    clearInterval(activeAnimations['tokenring'].interval);
+
+                    setTimeout(() => {
+                        // Reset node fill
+                        document.getElementById(`node-${nodeId}-circle`).setAttribute("fill", "#1e293b");
+                        document.getElementById(`node-${nodeId}-circle`).setAttribute("stroke", "#475569");
+                        statusEl.innerText = `Message sent successfully. Releasing token.`;
+                        
+                        // Resume rotation
+                        currentTokenPosition = (currentTokenPosition + 1) % 5;
+                        moveTokenIndicator();
+                        setupTokenRingPlaygroundLoop();
+                    }, 1200);
+
+                } else {
+                    // Just pass the token to the next node
+                    currentTokenPosition = (currentTokenPosition + 1) % 5;
+                    moveTokenIndicator();
+                }
+            }, 800);
+
+            function setupTokenRingPlaygroundLoop() {
+                // Re-register interval
+                activeAnimations['tokenring'].interval = setInterval(() => {
+                    if (messageQueue.includes(currentTokenPosition)) {
+                        const nodeId = nodeIds[currentTokenPosition];
+                        statusEl.innerText = `Token captured by Node ${nodeId.toUpperCase()}. Sending packet!`;
+                        document.getElementById(`node-${nodeId}-circle`).setAttribute("fill", "rgba(16, 185, 129, 0.4)");
+                        messageQueue = messageQueue.filter(item => item !== currentTokenPosition);
+                        clearInterval(activeAnimations['tokenring'].interval);
+                        setTimeout(() => {
+                            document.getElementById(`node-${nodeId}-circle`).setAttribute("fill", "#1e293b");
+                            document.getElementById(`node-${nodeId}-circle`).setAttribute("stroke", "#475569");
+                            statusEl.innerText = `Message sent successfully. Releasing token.`;
+                            currentTokenPosition = (currentTokenPosition + 1) % 5;
+                            moveTokenIndicator();
+                            setupTokenRingPlaygroundLoop();
+                        }, 1200);
+                    } else {
+                        currentTokenPosition = (currentTokenPosition + 1) % 5;
+                        moveTokenIndicator();
+                    }
+                }, 800);
+            }
+
+            function moveTokenIndicator() {
+                const angle = angles[currentTokenPosition] - 90; // offset so 0 deg is top A
+                const rad = angle * Math.PI / 180;
+                const x = 400 + 110 * Math.cos(rad);
+                const y = 190 + 110 * Math.sin(rad);
+                
+                tokenIndicator.setAttribute("cx", x);
+                tokenIndicator.setAttribute("cy", y);
+            }
+
+            activeAnimations['tokenring'] = {
+                interval: interval,
+                clear: () => clearInterval(interval)
+            };
+        }
+
+        // 6. Fiber Optics laser transmission reflection animation
+        function setupFiberPlayground(container, controls) {
+            controls.innerHTML = `
+                <button class="control-btn" id="btn-laser">🔦 Shine Laser (Single-Mode)</button>
+                <button class="control-btn" id="btn-led" style="margin-left:12px;">💡 Shine LED (Multi-Mode)</button>
+                <div style="font-size:0.8rem; color:var(--text-dim); margin-left:12px;" id="fiber-status">Select light source to transmit data.</div>
+            `;
+
+            container.innerHTML = `
+                <svg width="100%" height="380" viewBox="0 0 800 380" style="background:#050a12; border-radius:8px;" id="fiber-svg">
+                    <!-- Glass Fiber Core and Cladding borders -->
+                    <path d="M 50 190 Q 220 100 400 190 T 750 190" fill="none" stroke="#1e293b" stroke-width="40" stroke-linecap="round" id="cladding"/>
+                    <path d="M 50 190 Q 220 100 400 190 T 750 190" fill="none" stroke="#334155" stroke-width="12" stroke-linecap="round" id="core"/>
+                    
+                    <text x="80" y="145" fill="var(--text-dim)" font-size="10">Glass Core</text>
+                    <text x="240" y="80" fill="var(--text-dim)" font-size="10">Cladding Boundary</text>
+                    
+                    <!-- Light Rays Dynamic Group -->
+                    <g id="light-rays"></g>
+                    
+                    <!-- Sender laser source -->
+                    <rect x="20" y="170" width="30" height="40" fill="#64748b" rx="2"/>
+                    <circle cx="50" cy="190" r="5" fill="#475569"/>
+                    
+                    <!-- Receiver sensor -->
+                    <rect x="750" y="170" width="30" height="40" fill="#64748b" rx="2"/>
+                    <circle cx="750" cy="190" r="8" fill="#475569" id="sensor-glow"/>
+                </svg>
+            `;
+
+            const raysGroup = document.getElementById('light-rays');
+            const sensor = document.getElementById('sensor-glow');
+            const statusEl = document.getElementById('fiber-status');
+
+            let timers = [];
+
+            document.getElementById('btn-laser').onclick = () => {
+                raysGroup.innerHTML = '';
+                timers.forEach(clearTimeout);
+                timers = [];
+                sensor.setAttribute("fill", "#475569");
+                statusEl.innerText = "Laser activated. Light ray follows a single, straight-focused path.";
+
+                // Generate Single-Mode clean laser path (perfect reflection or straight center)
+                const laserLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                laserLine.setAttribute("d", "M 50 190 Q 220 100 400 190 T 750 190");
+                laserLine.setAttribute("fill", "none");
+                laserLine.setAttribute("stroke", "#ef4444");
+                laserLine.setAttribute("stroke-width", "4");
+                laserLine.setAttribute("stroke-dasharray", "700");
+                laserLine.setAttribute("stroke-dashoffset", "700");
+                
+                // Add glowing filter
+                laserLine.setAttribute("filter", "drop-shadow(0 0 6px #ef4444)");
+                raysGroup.appendChild(laserLine);
+
+                // Animate stroke drawing
+                let start = null;
+                const duration = 1200;
+                function draw(time) {
+                    if (!start) start = time;
+                    const p = (time - start) / duration;
+                    if (p < 1) {
+                        laserLine.setAttribute("stroke-dashoffset", 700 - 700*p);
+                        requestAnimationFrame(draw);
+                    } else {
+                        laserLine.setAttribute("stroke-dashoffset", "0");
+                        sensor.setAttribute("fill", "#ef4444");
+                        statusEl.innerText = "Single-mode signal received! Zero reflection interference (ideal for long ranges).";
+                    }
+                }
+                requestAnimationFrame(draw);
+            };
+
+            document.getElementById('btn-led').onclick = () => {
+                raysGroup.innerHTML = '';
+                timers.forEach(clearTimeout);
+                timers = [];
+                sensor.setAttribute("fill", "#475569");
+                statusEl.innerText = "LED activated. Multiple light rays bounce down the fiber cladding walls.";
+
+                // Generate bouncing rays representing multi-mode light propagation
+                const points1 = "M 50 190 L 100 178 L 170 200 L 240 175 L 310 198 L 380 180 L 450 200 L 520 180 L 590 202 L 660 180 L 750 190";
+                const points2 = "M 50 190 L 130 202 L 210 178 L 290 200 L 370 180 L 450 202 L 530 178 L 610 200 L 690 180 L 750 190";
+
+                const r1 = createRay(points1, "#f59e0b");
+                const r2 = createRay(points2, "#eab308");
+
+                raysGroup.appendChild(r1);
+                raysGroup.appendChild(r2);
+
+                animateRay(r1, 1400, () => {
+                    sensor.setAttribute("fill", "#f59e0b");
+                    statusEl.innerText = "Multi-mode signal received! Notice how multiple paths (modes) arrive slightly scattered.";
+                });
+                animateRay(r2, 1600, null);
+            };
+
+            function createRay(d, color) {
+                const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                p.setAttribute("d", d);
+                p.setAttribute("fill", "none");
+                p.setAttribute("stroke", color);
+                p.setAttribute("stroke-width", "2");
+                p.setAttribute("stroke-dasharray", "800");
+                p.setAttribute("stroke-dashoffset", "800");
+                p.setAttribute("filter", `drop-shadow(0 0 4px ${color})`);
+                return p;
+            }
+
+            function animateRay(ray, duration, callback) {
+                let start = null;
+                function draw(time) {
+                    if (!start) start = time;
+                    const p = (time - start) / duration;
+                    if (p < 1) {
+                        ray.setAttribute("stroke-dashoffset", 800 - 800*p);
+                        requestAnimationFrame(draw);
+                    } else {
+                        ray.setAttribute("stroke-dashoffset", "0");
+                        if (callback) callback();
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+
+            activeAnimations['fiberoptics'] = {
+                interval: null,
+                clear: () => timers.forEach(clearTimeout)
+            };
+        }
+
+        // Initialize SPA
+        init();
     </script>
 </body>
 </html>
